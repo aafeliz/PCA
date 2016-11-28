@@ -13,7 +13,7 @@
 #include "include/PCA.h"
 #include <cstdarg.h> //va_list, va_start, va_end
 #include <assert.h>
-FeatureData::FeatureData(string name, vector<double> data): name(name), data(data) {}
+FeatureData::FeatureData(string name, Matrix data): FeatureName(name), data(data) {}
 
 
 PCA::PCA(): numFeatures(0)

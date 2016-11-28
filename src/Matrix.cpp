@@ -36,7 +36,7 @@ Matrix::Matrix(Matrix&& orig) : rows(orig.rows), cols(orig.cols), m(orig.m)
 Matrix& operator =(const Matrix& orig)
 {
         if (this != &orig) {
-            //TODO: copy goes here.  Try to use copy constructor in C++11, need to check!
+            //@todo: copy goes here.  Try to use copy constructor in C++11, need to check!
         }
         return *this;
 }
@@ -62,9 +62,18 @@ double Matrix:: operator T(int r, int c) const
     return m[r*cols + c];
 }
 
-friend Matrix::Matrix operator +(const Matrix& a, const Matrix& b);
-friend Matrix::Matrix operator -(const Matrix& a, const Matrix& b);
-friend Matrix::Matrix operator *(const Matrix& a, const Matrix& b);
+friend Matrix::Matrix operator +(const Matrix& a, const Matrix& b)
+{
+    // @todo: implement function
+}
+friend Matrix::Matrix operator -(const Matrix& a, const Matrix& b)
+{
+    // @todo: implement function
+}
+friend Matrix::Matrix operator *(const Matrix& a, const Matrix& b)
+{
+    // @todo: implement function
+}
 
 // add another matrix to this one, changing this
 Matrix Matrix::operator +=(const Matrix& b)
@@ -80,6 +89,14 @@ Matrix Matrix::operator -=(const Matrix& b)
     Matrix mx;
     return mx;
 }
+
+// as features with input data are being read the vectors get
+// placed into the matrix
+friend Matrix::Matrix operator <<(const Matrix&)
+{
+    // @todo: implement function
+}
+
 vector<double> Matrix::gaussPartialPivoting(vector<double>& B) // solve (*this)x = B, returning x.
 {
     // @todo: implement function
@@ -101,19 +118,19 @@ void Matrix::gaussFullPivoting(vector<double>&x, vector<double>& B) // solve (*t
     // @todo: implement function
 }
 // a to the integer power k
-friend Matrix::Matrix operator ^(const Matrix& a, int k);
+friend Matrix::Matrix operator ^(const Matrix& a, int k)
 {
     // @todo: implement function
 }
 
 // write out matrix to a stream
-friend Matrix::ostream& operator <<(ostream& s, const Matrix& m);
+friend Matrix::ostream& operator <<(ostream& s, const Matrix& m)
 {
     // @todo: implement function
 }
 
 // read in matrix from a stream
-friend Matrix::istream& operator >>(istream& s, Matrix& m);
+friend Matrix::istream& operator >>(istream& s, Matrix& m)
 {
     // @todo: implement function
 }

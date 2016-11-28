@@ -8,7 +8,7 @@
  *  @author Elvin (<githubid>)
  *  @date 11/26/16
  *  @bug No known bugs.
- *  @todo Need to create methods for eigen decomposition. Providing PCA class with eigen value & vector.
+ *  @todo reimplement methods using support methods from matrix
  */
 #ifndef PCA_PCA_H
 #define PCA_PCA_H
@@ -22,8 +22,8 @@ class FeatureData
 {
 
 public:
-    string name;
-    vector<double> data;
+    string featureName;
+    Matrix data;
     FeatureData(string, vector<double>);
 
 };
@@ -35,9 +35,9 @@ class PCA
 {
 private:
     int numFeatures;
-    vector<FeatureData>  featuresData;
-    vector<double> mu;
-    vector<vector<double>> sMat;
+    Matrix  featuresData;
+    Matrix mu; // more like a vector so it [1 x numFeatures]
+    Matrix sMat;
 
 
     /**@brief
@@ -51,9 +51,7 @@ private:
      * where xi is each input, that is correlated to the feature of that mu
      */
     void calcScatterMatrix();
-
-    vector<vector<double>> vectorMultItTranspose(vector<double>);
-    void add2total(vector<vector<double>> &, vector<vector<double>>);
+    void calcEigenDecomp();
 
 public:
     PCA();
