@@ -61,6 +61,7 @@ void PCA::calcMus()///O(numFeatures*numInputsPerFeature)
         double avg = sum/it.data.size();
         this->mu.push_back(avg);
     }
+
 }
 /*
  * one xi-mu for all features

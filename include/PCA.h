@@ -24,7 +24,7 @@ class FeatureData
 public:
     string featureName;
     Matrix data;
-    FeatureData(string, vector<double>);
+    FeatureData(string, Matrix);
 
 };
 
@@ -35,9 +35,11 @@ class PCA
 {
 private:
     int numFeatures;
-    Matrix  featuresData;
+    Matrix featuresData;
     Matrix mu; // more like a vector so it [1 x numFeatures]
     Matrix sMat;
+    Matrix eigenVals;
+    Matrix eigenVect;
 
 
     /**@brief

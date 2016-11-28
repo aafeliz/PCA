@@ -24,6 +24,9 @@ public:
     Matrix(const Matrix&);
     Matrix(Matrix&& );
     Matrix& operator =(const Matrix&);
+    // retrieve matrix values from array requested in matrix from
+    friend Matrix operator ()(int, int);
+
 
     Matrix operator T(const Matrix&);
     Matrix operator T(Matrix&);

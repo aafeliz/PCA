@@ -41,6 +41,11 @@ Matrix& operator =(const Matrix& orig)
         return *this;
 }
 
+friend Matrix::Matrix operator ()(int, int)
+{
+    //@ todo: implement function
+}
+
 Matrix Matrix:: operator T&(int r, int c)
 {
     // @todo: implement function
