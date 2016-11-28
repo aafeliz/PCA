@@ -1,6 +1,15 @@
-//
-// Created by Ariel Feliz on 11/26/16.
-//
+/** @file PCA.cpp
+ *  @brief Principal Component Analysis Class.
+ *
+ *  Contains class to calculate most sinigicant feature for a given class
+ *  and inputs for those features.
+ *
+ *  @author Ariel Feliz(aafeliz)
+ *  @author Elvin (<githubid>)
+ *  @date 11/26/16
+ *  @bug No known bugs.
+ *  @todo Need to create methods for eigen decomposition. Providing PCA class with eigen value & vector.
+ */
 #include "include/PCA.h"
 #include <cstdarg.h> //va_list, va_start, va_end
 #include <assert.h>
