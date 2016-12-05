@@ -25,26 +25,34 @@ Matrix::Matrix(uint32_t rows, uint32_t cols, double val = 0) : rows(rows), cols(
 }//*/
 int Matrix::getIdx(int r, int c)
 {
-    return (rows*r + c);
+    return ((cols*r) + c);// rows
 }
 int Matrix::getIdx(int r, int c) const
 {
-    return (rows*r + c);
+    return ((cols*r) + c);
 }
-Matrix::Matrix(uint32_t r, u_int32_t c,double *arr)
+
+Matrix::Matrix(uint32_t r, u_int32_t c, double *arr)
 {
-    rows = r, cols = c, m = arr;
-    arr = nullptr;
+    rows = r, cols = c;
+    m = new double(rows * cols);
+    for(int i = 0; i < (rows * cols); i++)
+    {
+        m[i] = arr[i];
+    }
+    delete[] arr;
 }
 Matrix::~Matrix()
 {
-    delete [] m;
+    delete[] m;
 }
 /*
  *
  */
 Matrix::Matrix(const Matrix& orig) : rows(orig.rows), cols(orig.cols)
 {
+    /**@todo: should it delete m first, possible memory leak
+     */
     m = new double[rows*cols];
     for (int i = 0; i < rows*cols; ++i)
         m[i] = orig.m[i];
@@ -56,11 +64,17 @@ Matrix::Matrix(Matrix&& orig) : rows(orig.rows), cols(orig.cols), m(orig.m)
 }
 Matrix& Matrix::operator =(const Matrix& orig)
 {
-        if (this != &orig) {
-            Matrix m(orig);
-            return m;
+    if (this != &orig) {
+        delete[] this->m;
+        this->m = new double[orig.cols * orig.rows];
+        for(int i = 0; i < (orig.cols * orig.rows); i++)
+        {
+            this->m[i] = orig.m[i];
         }
-        return *this;
+        this->cols = orig.cols;
+        this->rows = orig.rows;
+    }
+    return *this;
 }
 
 double Matrix::operator ()(int r, int c)
@@ -69,7 +83,16 @@ double Matrix::operator ()(int r, int c)
 }
 double Matrix::operator()(int r, int c) const
 {
-    return m[Matrix::getIdx(r, c)];
+    return m[getIdx(r, c)];
+}
+/*
+double& Matrix::operator[](int r, int c)
+{
+    return (this->m[getIdx(r, c)]);
+}*/
+inline double Matrix::setValue(int r, int c, double val)
+{
+    this->m[getIdx(r, c)] = val;
 }
 /*
 Matrix Matrix:: operator T&(int r, int c)
@@ -93,6 +116,54 @@ double Matrix:: operator T(int r, int c) const
     return m[r*cols + c];
 }
 */
+Matrix operator ~(const Matrix& a)
+{
+    const size_t size = a.rows * a.cols;
+    double *arr = new double[size];
+
+    for(int i = 0; i < size; i++)
+        arr[i] = a.m[i];
+
+    int r = 0, c = 0, tidx = 0;
+    for(int i = 0; i < size; i++)
+    {
+        r = i / a.cols;
+        c = i % a.cols;
+        tidx = (c*a.rows) + r;
+        arr[i] = a.m[tidx];
+    }
+
+    return Matrix(a.cols, a.rows, arr);
+}
+void operator ~(Matrix& a)
+{
+    const size_t size = a.rows * a.cols;
+    double *arr = new double[size];
+
+    for(int i = 0; i < size; i++)
+        arr[i] = a.m[i];
+
+    int r = 0, c = 0, tidx = 0;
+    for(int i = 0; i < size; i++)
+    {
+        r = i / a.cols;
+        c = i % a.cols;
+        tidx = (c*a.rows) + r;
+        a.m[tidx] = arr[i];
+    }
+    uint32_t temp = a.cols;
+    a.cols = a.rows;
+    a.rows = temp;
+
+    delete[] arr;
+    return;
+    //return Matrix(a.cols, a.rows, arr);
+}
+/*double Matrix::operator ~(int r, int c)
+{
+    //return this->m[r*cols + c];
+    return 0.0;
+}*/
 
 Matrix operator +(const Matrix& a, const Matrix& b)
 {
@@ -102,7 +173,7 @@ Matrix operator +(const Matrix& a, const Matrix& b)
     {
         for(int c = 0; c < a.cols; c++)
         {
-            arr[((r*a.rows) + c)] = a(r, c) + b(r, c);
+            arr[a.getIdx(r, c)] = a(r, c) + b(r, c);
         }
     }
     // no need to delete arr since it becomes nullptr once Matrix is created
@@ -116,7 +187,7 @@ Matrix operator -(const Matrix& a, const Matrix& b)
     {
         for(int c = 0; c < a.cols; c++)
         {
-            arr[((r*a.rows) + c)] = a(r, c) - b(r, c);
+            arr[a.getIdx(r, c)] = a(r, c) - b(r, c);//((r*a.rows) + c)
         }
     }
     // no need to delete arr since it becomes nullptr once Matrix is created
@@ -127,6 +198,10 @@ Matrix operator *(const Matrix& a, const Matrix& b)
 {
     if(a.cols != b.rows) exit(1);
     double *arr = new double[a.rows * b.cols];
+    for(int i = 0; i< (a.rows * b.cols); i++)
+    {
+        arr[i] = 0;
+    }
     for(int ra = 0; ra < a.rows; ra++)
     {
         for(int cb = 0; cb < b.cols; cb++)
@@ -191,22 +266,33 @@ void Matrix::gaussFullPivoting(vector<double>&x, vector<double>& B) // solve (*t
 }*/
 
 // write out matrix to a stream
-std::ostream& operator<<(std::ostream& s, Matrix& m)
+std::ostream& operator<<(std::ostream& s, const Matrix& m)
 {
     for(int i = 0; i < m.rows; i++)
     {
         for(int j = 0; j < m.cols; j++)
         {
-            s << m(i, j);
+            double val = m(i, j);
+            s << val << ',';
         }
         s << '\n';
     }
     return s;
 }
-/*
+
 // read in matrix from a stream
-friend Matrix::istream& operator >>(istream& s, Matrix& m)
+std::istream& operator >>(std::istream& s, Matrix& m)
 {
     // @todo: implement function
+
 }
-*/
+
+inline void Matrix::setRows(uint32_t r)
+{
+    rows = r;
+}
+inline void Matrix::setCols(uint32_t c)
+{
+    cols = c;
+}
+

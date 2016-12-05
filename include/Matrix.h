@@ -16,12 +16,19 @@
 #define PCA_MATRIX_H
 #include <fstream> // ostream, ofstream
 #include <iostream>
-
+/**@todo: switch everything to template type to make class general to data type.
+                Matrix operator T(const Matrix&);
+                Matrix operator T(Matrix&);
+                double operator T&(int, int); //T&
+                double operator T(int, int); //T
+ *        switch size type to size_t instead of int
+ *
+ */
 class Matrix {
 private:
     double* m;
-    int getIdx(int, int);
-    int getIdx(int, int) const;
+    int getIdx(int r, int c);
+    int getIdx(int r, int c) const;
 public:
 
     uint32_t rows,cols;
@@ -32,7 +39,7 @@ public:
             m[i] = val;
     }
     // will be used to make matrix from array; take a look in how it is use in +, -, and *
-    Matrix(uint32_t, uint32_t, double *);
+    Matrix(uint32_t r, uint32_t c, double *);
     ~Matrix();
 
     /**@brief: c++ 11 copy constructor
@@ -41,15 +48,22 @@ public:
     Matrix(Matrix&& );
     Matrix& operator =(const Matrix&);
     // retrieve individual matrix values from array requested in matrix from
-    double operator ()(int, int);
-    double operator ()(int, int) const;
+    double operator ()(int r, int c);
+    double operator ()(int r, int c) const;
+    //double& operator[]( int, int);
+    inline double setValue(int, int, double);
 
-    /*
-    Matrix operator T(const Matrix&);
-    Matrix operator T(Matrix&);
-    double operator T&(int, int); //T&
-    double operator T(int, int); //T
-    */
+    /**@brief: matrix transpose operators
+     * T ===> ~
+     */
+
+    friend Matrix operator ~(const Matrix&);
+    //friend Matrix operator ~(Matrix&);
+    /**@brief: transposes matrix being passed in
+     */
+    friend void operator ~(Matrix&);
+    //double operator ~(int, int);
+
 
     friend Matrix operator +(const Matrix&, const Matrix&);
     friend Matrix operator -(const Matrix&, const Matrix&);
@@ -77,10 +91,14 @@ public:
     */
     // a to the integer power k
     //friend Matrix& operator ^(const Matrix&, int);
-    // write out matrix to a stream
-    friend std::ostream& operator<<(std::ostream&, Matrix&); // no const because using non const type operator()
+    /**@brief: write I/O matrix to a stream
+     */
+    friend std::ostream& operator<<(std::ostream&, const Matrix&); // no const because using non const type operator()
     // read in matrix from a stream
-    //friend std::istream& operator >>(std::istream&, Matrix&);
+    friend std::istream& operator >>(std::istream&, Matrix&);
+
+    inline void setRows(uint32_t);
+    inline void setCols(uint32_t);
 
 };
 #endif //PCA_MATRIX_H
