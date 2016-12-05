@@ -57,6 +57,13 @@ int main() {
     cout << "m7:\n" << m7 << endl;
     ~m7;
     cout << "~m7:\n" << m7 << endl;
+
+    Matrix m8 = m1;
+    Matrix m9 = m2;
+    m8 += m9;
+    cout << "m8 +=: \n" << m8 << endl;
+    m9 -= m8;
+    cout << "m9 -=: \n" << m9 << endl;
     std::cout << "Hello, World!" << std::endl;
     return 0;
 }

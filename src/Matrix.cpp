@@ -214,22 +214,28 @@ Matrix operator *(const Matrix& a, const Matrix& b)
     return Matrix(a.rows, b.cols, arr);
 }
 
-/*
+
 // add another matrix to this one, changing this
 Matrix Matrix::operator +=(const Matrix& b)
 {
     // @todo: implement function
-    Matrix mx;
-    return mx;
+    for(int i = 0; i < (this->cols * this->rows); i++)
+    {
+        this->m[i] += b.m[i];
+    }
+    return *this;
 }
 // subtract another matrix from this one, changing this
 Matrix Matrix::operator -=(const Matrix& b)
 {
     // @todo: implement function
-    Matrix mx;
-    return mx;
+    for(int i = 0; i < (this->cols * this->rows); i++)
+    {
+        this->m[i] -= b.m[i];
+    }
+    return *this;
 }
-*/
+
 /*
 // as features with input data are being read the vectors get
 // placed into the matrix

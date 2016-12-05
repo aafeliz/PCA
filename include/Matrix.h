@@ -69,12 +69,12 @@ public:
     friend Matrix operator -(const Matrix&, const Matrix&);
     friend Matrix operator *(const Matrix&, const Matrix&);
 
-    /*
+
     // add another matrix to this one, changing this
     Matrix operator +=(const Matrix&);
     // subtract another matrix from this one, changing this
     Matrix operator -=(const Matrix&);
-    */
+
     /*
     // as features with input data are being read the vectors get
     // placed into the matrix
