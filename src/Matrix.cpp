@@ -12,12 +12,13 @@
  *  @todo implement empty methods
  */
 #include "../include/Matrix.h"
+#include <cstdint>
 #include <iostream>
 #include <fstream>
 
 /*
  * @todo: @bug redefinition issue with header when using it with : rows(rows)...
-Matrix::Matrix(uint32_t rows, uint32_t cols, double val = 0) : rows(rows), cols(cols)
+Matrix::Matrix(size_t rows, size_t cols, double val = 0) : rows(rows), cols(cols)
 {
     m = new double[rows*cols];
     for (int i = 0; i < rows*cols; i++)
@@ -32,7 +33,7 @@ int Matrix::getIdx(int r, int c) const
     return ((cols*r) + c);
 }
 
-Matrix::Matrix(uint32_t r, u_int32_t c, double *arr)
+Matrix::Matrix(size_t r, size_t c, double *arr)
 {
     rows = r, cols = c;
     m = new double(rows * cols);
@@ -151,7 +152,7 @@ void operator ~(Matrix& a)
         tidx = (c*a.rows) + r;
         a.m[tidx] = arr[i];
     }
-    uint32_t temp = a.cols;
+    size_t temp = a.cols;
     a.cols = a.rows;
     a.rows = temp;
 
@@ -218,7 +219,6 @@ Matrix operator *(const Matrix& a, const Matrix& b)
 // add another matrix to this one, changing this
 Matrix Matrix::operator +=(const Matrix& b)
 {
-    // @todo: implement function
     for(int i = 0; i < (this->cols * this->rows); i++)
     {
         this->m[i] += b.m[i];
@@ -228,7 +228,6 @@ Matrix Matrix::operator +=(const Matrix& b)
 // subtract another matrix from this one, changing this
 Matrix Matrix::operator -=(const Matrix& b)
 {
-    // @todo: implement function
     for(int i = 0; i < (this->cols * this->rows); i++)
     {
         this->m[i] -= b.m[i];
@@ -293,11 +292,11 @@ std::istream& operator >>(std::istream& s, Matrix& m)
 
 }
 
-inline void Matrix::setRows(uint32_t r)
+inline void Matrix::setRows(size_t r)
 {
     rows = r;
 }
-inline void Matrix::setCols(uint32_t c)
+inline void Matrix::setCols(size_t c)
 {
     cols = c;
 }

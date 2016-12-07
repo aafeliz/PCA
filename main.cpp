@@ -22,7 +22,7 @@ int main() {
     Matrix m5 = mult1 * mult2;//Matrix(2, 2, 2) * Matrix(2, 2, 3);
     cout << "m5 mult:\n" << m5 << endl;
 
-    uint32_t rows, cols;
+    size_t rows, cols;
     std::cout << "enter num of ROWS: ";
     std::cin >> rows;
     std::cout << "\nenter num of COLUMNS: ";

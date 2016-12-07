@@ -16,6 +16,7 @@
 #define PCA_MATRIX_H
 #include <fstream> // ostream, ofstream
 #include <iostream>
+#include <stdlib.h>
 /**@todo: switch everything to template type to make class general to data type.
                 Matrix operator T(const Matrix&);
                 Matrix operator T(Matrix&);
@@ -31,15 +32,15 @@ private:
     int getIdx(int r, int c) const;
 public:
 
-    uint32_t rows,cols;
-    Matrix(uint32_t rows, uint32_t cols, double val = 0): rows(rows), cols(cols)
+    size_t rows,cols;
+    Matrix(size_t rows, size_t cols, double val = 0): rows(rows), cols(cols)
     {
         m = new double[rows*cols];
         for (int i = 0; i < rows*cols; i++)
             m[i] = val;
     }
     // will be used to make matrix from array; take a look in how it is use in +, -, and *
-    Matrix(uint32_t r, uint32_t c, double *);
+    Matrix(size_t r, size_t c, double *);
     ~Matrix();
 
     /**@brief: c++ 11 copy constructor
@@ -74,6 +75,9 @@ public:
     Matrix operator +=(const Matrix&);
     // subtract another matrix from this one, changing this
     Matrix operator -=(const Matrix&);
+    // subtract and 1xn or nx1 matrix from this matrix
+    void minusVect(const Matrix& vec);
+
 
     /*
     // as features with input data are being read the vectors get
@@ -97,8 +101,8 @@ public:
     // read in matrix from a stream
     friend std::istream& operator >>(std::istream&, Matrix&);
 
-    inline void setRows(uint32_t);
-    inline void setCols(uint32_t);
+    inline void setRows(size_t);
+    inline void setCols(size_t);
 
 };
 #endif //PCA_MATRIX_H

@@ -47,11 +47,15 @@ void PCA::passFeaturesData(vector<FeatureData> features)
         this->featuresData.insert(it, features.begin(), features.endl());
     }
 }
+void PCA::passFeaturesData(Matrix features)
+{
+    this->featuresData = features;
+}
 
-void PCA::calcMus()///O(numFeatures*numInputsPerFeature)
+void PCA::calcMeans()///O(numFeatures*numInputsPerFeature)
 {
 
-    for(auto it : this->featuresData) //for(auto it = this->inputData.begin(); it != this->inputData.end(); ++it)
+    /*for(auto it : this->featuresData) //for(auto it = this->inputData.begin(); it != this->inputData.end(); ++it)
     {
         double sum = 0;
         for(it2 : it.data)
@@ -60,12 +64,25 @@ void PCA::calcMus()///O(numFeatures*numInputsPerFeature)
         }
         double avg = sum/it.data.size();
         this->mu.push_back(avg);
-    }
+    }*/
+    double *arr = new double[numFeatures];
+    for(int r = 0; r < featuresData.rows; r++)
+    {
+        double featSum = 0;
+        for(int c = 0; c < featuresData.cols; c++)
+            featSum += featuresData(r, c);
+        double avg = featSum/((double)featuresData.cols);
+        arr[r] = avg;
 
+    }
+    //Matrix m(numfeatures, 1, arr);
+    mu = Matrix(numfeatures, 1, arr);
 }
+
 /*
- * one xi-mu for all features
+/**@brief: one xi-mu for all features
  */
+/*
 vector<vector<double>> PCA::vectorMultItTranspose(vector<double> featsX_mu)
 {
     vector<vector<double>> matrix(featsX_mu.size());
@@ -90,13 +107,7 @@ vector<vector<double>> PCA::vectorMultItTranspose(vector<double> featsX_mu)
 }
 void PCA::add2total(vector<vector<double>> &total, vector<vector<double>> current)
 {
-    /*
-    for(int from = 0, to = 0; from < total.size() && to < total.size();from++, to++)
-    {
-        for(int from = 0, to = 0; from < total.size() && to < total.size();from++, to++)
-    }
 
-    */
     if(total.empty())
     {
         total = current;
@@ -110,6 +121,7 @@ void PCA::add2total(vector<vector<double>> &total, vector<vector<double>> curren
         }
     }
 }
+*/
 
 void PCA::calcScatterMatrix()
 {

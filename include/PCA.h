@@ -36,16 +36,21 @@ class PCA
 private:
     int numFeatures;
     Matrix featuresData;
-    Matrix mu; // more like a vector so it [1 x numFeatures]
-    Matrix sMat;
-    Matrix eigenVals;
-    Matrix eigenVect;
+    /**@brief: this can be passed in to know if rows/cols are input nums or features
+     * @todo: can be done after matrix class is of type template
+     */
+    Matrix names;//
+
+    Matrix mu; // more like a vector so it [numFeatures(rows) x 1(cols)]
+    Matrix sMat; // scatter matrix
+    Matrix eigenVals; // matrix of eigen values
+    Matrix eigenVect; // matrix of eigen vectors
 
 
     /**@brief
      * calculate each features mean and append to mu
      */
-    void calcMus();
+    void calcMeans();
     /**@brief
      * calculate scatter matrix
      * which will contain covariance and variance
@@ -64,6 +69,7 @@ public:
      */
     void passFeaturesData(int numFeatures, ...); // expecting arguments of type FeatureData
     void passFeaturesData(vector<FeatureData> features);
+    void passFeaturesData(Matrix features);
     /*
      * calculate means and scatter matrix
      */
