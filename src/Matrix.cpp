@@ -11,7 +11,7 @@
  *  @bug No known bugs.
  *  @todo implement empty methods
  */
-#include "Matrix.h"
+#include "../include/Matrix.h"
 #include <cstdint>
 #include <iostream>
 #include <fstream>
