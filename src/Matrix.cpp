@@ -1,11 +1,11 @@
 /** @file Matrix.cpp
  *  @brief Principal Component Analysis Class.
  *
- *  Contains class to calculate most sinigicant feature for a given class
+ *  Contains class to calculate most significant feature for a given class
  *  and inputs for those features.
  *
  *  @author Ariel Feliz(aafeliz)
- *  @author Elvin (<githubid>)
+ *  @author Elvin Abreu(<elvinabreu>)
  *  @author Dov Kruger
  *  @date 11/27/16
  *  @bug No known bugs.

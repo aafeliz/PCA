@@ -1,6 +1,6 @@
 #include <iostream>
 #include "include/Matrix.h"
-
+#include <cstdint>
 using namespace std;
 
 int main() {
@@ -23,19 +23,19 @@ int main() {
     cout << "m5 mult:\n" << m5 << endl;
 
     size_t rows, cols;
-    std::cout << "enter num of ROWS: ";
-    std::cin >> rows;
-    std::cout << "\nenter num of COLUMNS: ";
-    std::cin >> cols;
+    cout << "enter num of ROWS: ";
+    cin >> rows;
+    cout << "\nenter num of COLUMNS: ";
+    cin >> cols;
     double* m = new double[rows * cols];
     double val;
     for(int r = 0; r < rows; r++)
     {
         for(int c = 0; c < cols; c++)
         {
-            //std::cout << "Enter value to go ino,  Row " << r+1 << "and Column " << c+1 << " : ";
-            //std::cin >> val;
-            //std::cout << '\n';
+            //cout << "Enter value to go ino,  Row " << r+1 << "and Column " << c+1 << " : ";
+            //cin >> val;
+            //cout << '\n';
             val = r*cols + c;
             m[r*cols + c] = val+1;
         }
@@ -64,6 +64,6 @@ int main() {
     cout << "m8 +=: \n" << m8 << endl;
     m9 -= m8;
     cout << "m9 -=: \n" << m9 << endl;
-    std::cout << "Hello, World!" << std::endl;
+    cout << "Hello, World!" << endl;
     return 0;
 }
