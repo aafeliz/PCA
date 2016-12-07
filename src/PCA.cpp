@@ -1,3 +1,4 @@
+#if 0
 /** @file PCA.cpp
  *  @brief Principal Component Analysis Class.
  *
@@ -10,8 +11,8 @@
  *  @bug No known bugs.
  *  @todo Need to create methods for eigen decomposition. Providing PCA class with eigen value & vector.
  */
-#include "include/PCA.h"
-#include <cstdarg.h> //va_list, va_start, va_end
+#include "PCA.h"
+//#include <cstdarg.h> //va_list, va_start, va_end
 #include <assert.h>
 FeatureData::FeatureData(string name, Matrix data): FeatureName(name), data(data) {}
 
@@ -168,5 +169,5 @@ void PCA::calcScatterMatrix()
 
 
 
-
+#endif
 

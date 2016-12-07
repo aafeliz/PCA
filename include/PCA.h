@@ -1,3 +1,4 @@
+#if 0
 /** @file PCA.h
  *  @brief Principal Component Analysis Class.
  *
@@ -78,3 +79,5 @@ public:
 
 };
 #endif //PCA_PCA_H
+
+#endif

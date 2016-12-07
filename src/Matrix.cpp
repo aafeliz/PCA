@@ -11,7 +11,7 @@
  *  @bug No known bugs.
  *  @todo implement empty methods
  */
-#include "../include/Matrix.h"
+#include "Matrix.h"
 #include <cstdint>
 #include <iostream>
 #include <fstream>
@@ -21,14 +21,14 @@
 Matrix::Matrix(size_t rows, size_t cols, double val = 0) : rows(rows), cols(cols)
 {
     m = new double[rows*cols];
-    for (int i = 0; i < rows*cols; i++)
+    for (size_t i = 0; i < rows*cols; i++)
         m[i] = val;
 }//*/
-int Matrix::getIdx(int r, int c)
+size_t Matrix::getIdx(size_t r, size_t c)
 {
     return ((cols*r) + c);// rows
 }
-int Matrix::getIdx(int r, int c) const
+size_t Matrix::getIdx(size_t r, size_t c) const
 {
     return ((cols*r) + c);
 }
@@ -36,8 +36,8 @@ int Matrix::getIdx(int r, int c) const
 Matrix::Matrix(size_t r, size_t c, double *arr)
 {
     rows = r, cols = c;
-    m = new double(rows * cols);
-    for(int i = 0; i < (rows * cols); i++)
+    m = new double[rows * cols];
+    for(size_t i = 0; i < (rows * cols); i++)
     {
         m[i] = arr[i];
     }
@@ -55,20 +55,20 @@ Matrix::Matrix(const Matrix& orig) : rows(orig.rows), cols(orig.cols)
     /**@todo: should it delete m first, possible memory leak
      */
     m = new double[rows*cols];
-    for (int i = 0; i < rows*cols; ++i)
+    for (size_t i = 0; i < rows*cols; ++i)
         m[i] = orig.m[i];
 }
-Matrix::Matrix(Matrix&& orig) : rows(orig.rows), cols(orig.cols), m(orig.m)
+/*Matrix::Matrix(Matrix&& orig) : rows(orig.rows), cols(orig.cols), m(orig.m)
 {
     // might want to keep original
     //orig.m = nullptr;
-}
+}*/
 Matrix& Matrix::operator =(const Matrix& orig)
 {
     if (this != &orig) {
         delete[] this->m;
         this->m = new double[orig.cols * orig.rows];
-        for(int i = 0; i < (orig.cols * orig.rows); i++)
+        for(size_t i = 0; i < (orig.cols * orig.rows); i++)
         {
             this->m[i] = orig.m[i];
         }
@@ -78,41 +78,41 @@ Matrix& Matrix::operator =(const Matrix& orig)
     return *this;
 }
 
-double Matrix::operator ()(int r, int c)
+double Matrix::operator ()(size_t r, size_t c)
 {
     return m[getIdx(r, c)];
 }
-double Matrix::operator()(int r, int c) const
+double Matrix::operator()(size_t r, size_t c) const
 {
     return m[getIdx(r, c)];
 }
 /*
-double& Matrix::operator[](int r, int c)
+double& Matrix::operator[](size_t r, size_t c)
 {
     return (this->m[getIdx(r, c)]);
 }*/
-inline double Matrix::setValue(int r, int c, double val)
+inline void Matrix::setValue(size_t r, size_t c, double val)
 {
     this->m[getIdx(r, c)] = val;
 }
 /*
-Matrix Matrix:: operator T&(int r, int c)
+Matrix Matrix:: operator T&(size_t r, size_t c)
 {
     // @todo: implement function
     Matrix mx;
     return mx;
 }
-Matrix Matrix:: operator T(int r, int c) const
+Matrix Matrix:: operator T(size_t r, size_t c) const
 {
     // @todo: implement function
     Matrix mx;
     return mx;
 }
-double Matrix:: operator T&(int r, int c)
+double Matrix:: operator T&(size_t r, size_t c)
 {
     return m[r*cols + c];
 }
-double Matrix:: operator T(int r, int c) const
+double Matrix:: operator T(size_t r, size_t c) const
 {
     return m[r*cols + c];
 }
@@ -122,16 +122,13 @@ Matrix operator ~(const Matrix& a)
     const size_t size = a.rows * a.cols;
     double *arr = new double[size];
 
-    for(int i = 0; i < size; i++)
-        arr[i] = a.m[i];
-
-    int r = 0, c = 0, tidx = 0;
-    for(int i = 0; i < size; i++)
+    size_t r = 0, c = 0, tidx = 0;
+    for(size_t i = 0; i < size; i++)
     {
         r = i / a.cols;
         c = i % a.cols;
         tidx = (c*a.rows) + r;
-        arr[i] = a.m[tidx];
+        arr[tidx] = a.m[i];
     }
 
     return Matrix(a.cols, a.rows, arr);
@@ -141,11 +138,11 @@ void operator ~(Matrix& a)
     const size_t size = a.rows * a.cols;
     double *arr = new double[size];
 
-    for(int i = 0; i < size; i++)
+    for(size_t i = 0; i < size; i++)
         arr[i] = a.m[i];
 
-    int r = 0, c = 0, tidx = 0;
-    for(int i = 0; i < size; i++)
+    size_t r = 0, c = 0, tidx = 0;
+    for(size_t i = 0; i < size; i++)
     {
         r = i / a.cols;
         c = i % a.cols;
@@ -160,7 +157,7 @@ void operator ~(Matrix& a)
     return;
     //return Matrix(a.cols, a.rows, arr);
 }
-/*double Matrix::operator ~(int r, int c)
+/*double Matrix::operator ~(size_t r, size_t c)
 {
     //return this->m[r*cols + c];
     return 0.0;
@@ -170,9 +167,9 @@ Matrix operator +(const Matrix& a, const Matrix& b)
 {
     if(a.rows != b.rows || a.cols != b.cols) exit(1);
     double *arr = new double[a.rows * a.cols];
-    for(int r = 0; r < a.rows; r++)
+    for(size_t r = 0; r < a.rows; r++)
     {
-        for(int c = 0; c < a.cols; c++)
+        for(size_t c = 0; c < a.cols; c++)
         {
             arr[a.getIdx(r, c)] = a(r, c) + b(r, c);
         }
@@ -184,9 +181,9 @@ Matrix operator -(const Matrix& a, const Matrix& b)
 {
     if(a.rows != b.rows || a.cols != b.cols) exit(1);
     double *arr = new double[a.rows * a.cols];
-    for(int r = 0; r < a.rows; r++)
+    for(size_t r = 0; r < a.rows; r++)
     {
-        for(int c = 0; c < a.cols; c++)
+        for(size_t c = 0; c < a.cols; c++)
         {
             arr[a.getIdx(r, c)] = a(r, c) - b(r, c);//((r*a.rows) + c)
         }
@@ -199,15 +196,15 @@ Matrix operator *(const Matrix& a, const Matrix& b)
 {
     if(a.cols != b.rows) exit(1);
     double *arr = new double[a.rows * b.cols];
-    for(int i = 0; i< (a.rows * b.cols); i++)
+    for(size_t i = 0; i< (a.rows * b.cols); i++)
     {
         arr[i] = 0;
     }
-    for(int ra = 0; ra < a.rows; ra++)
+    for(size_t ra = 0; ra < a.rows; ra++)
     {
-        for(int cb = 0; cb < b.cols; cb++)
+        for(size_t cb = 0; cb < b.cols; cb++)
         {
-            for(int ca = 0; ca < a.cols; ca++)
+            for(size_t ca = 0; ca < a.cols; ca++)
                 arr[((ra * a.rows) + cb)] += a(ra, ca) * b(ca, cb);
         }
     }
@@ -219,7 +216,7 @@ Matrix operator *(const Matrix& a, const Matrix& b)
 // add another matrix to this one, changing this
 Matrix Matrix::operator +=(const Matrix& b)
 {
-    for(int i = 0; i < (this->cols * this->rows); i++)
+    for(size_t i = 0; i < (this->cols * this->rows); i++)
     {
         this->m[i] += b.m[i];
     }
@@ -228,7 +225,7 @@ Matrix Matrix::operator +=(const Matrix& b)
 // subtract another matrix from this one, changing this
 Matrix Matrix::operator -=(const Matrix& b)
 {
-    for(int i = 0; i < (this->cols * this->rows); i++)
+    for(size_t i = 0; i < (this->cols * this->rows); i++)
     {
         this->m[i] -= b.m[i];
     }
@@ -265,7 +262,7 @@ void Matrix::gaussFullPivoting(vector<double>&x, vector<double>& B) // solve (*t
 }
 */
 // a to the integer power k
-/*friend Matrix& Matrix::operator ^(const Matrix& a, int k)
+/*friend Matrix& Matrix::operator ^(const Matrix& a, size_t k)
 {
     // @todo: implement function
 }*/
@@ -273,11 +270,12 @@ void Matrix::gaussFullPivoting(vector<double>&x, vector<double>& B) // solve (*t
 // write out matrix to a stream
 std::ostream& operator<<(std::ostream& s, const Matrix& m)
 {
-    for(int i = 0; i < m.rows; i++)
+	double val;
+    for(size_t i = 0; i < m.rows; i++)
     {
-        for(int j = 0; j < m.cols; j++)
+        for(size_t j = 0; j < m.cols; j++)
         {
-            double val = m(i, j);
+            val = m(i, j);
             s << val << ',';
         }
         s << '\n';
@@ -285,12 +283,12 @@ std::ostream& operator<<(std::ostream& s, const Matrix& m)
     return s;
 }
 
-// read in matrix from a stream
+/* read in matrix from a stream
 std::istream& operator >>(std::istream& s, Matrix& m)
 {
     // @todo: implement function
 
-}
+}*/
 
 inline void Matrix::setRows(size_t r)
 {

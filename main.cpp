@@ -1,5 +1,5 @@
 #include <iostream>
-#include "include/Matrix.h"
+#include "Matrix.h"
 #include <cstdint>
 using namespace std;
 
@@ -29,9 +29,9 @@ int main() {
     cin >> cols;
     double* m = new double[rows * cols];
     double val;
-    for(int r = 0; r < rows; r++)
+    for(size_t r = 0; r < rows; r++)
     {
-        for(int c = 0; c < cols; c++)
+        for(size_t c = 0; c < cols; c++)
         {
             //cout << "Enter value to go ino,  Row " << r+1 << "and Column " << c+1 << " : ";
             //cin >> val;
