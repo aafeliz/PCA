@@ -177,16 +177,71 @@ Matrix operator +(const Matrix& a, const Matrix& b)
     // no need to delete arr since it becomes nullptr once Matrix is created
     return Matrix(a.rows, b.cols, arr);
 }
+
 Matrix operator -(const Matrix& a, const Matrix& b)
 {
+    int sizea = a.rows*a.cols;
+    int sizeb = b.rows*b.cols;
+
+    //can't subtract large b from small a
+    if (sizeb > sizea) exit(1);
+
+    else if (sizea != sizeb)
+    {
+        if (b.rows == a.rows || b.cols == a.cols)
+        {
+            if (b.rows == 1 && sizeb != 1)
+            {
+                double *arr = new double[a.rows * a.cols];
+                for(size_t r = 0; r < a.rows; r++)
+                {
+                    for(size_t c = 0; c < a.cols; c++)
+                        arr[a.getIdx(r, c)] = a(r, c) - b(0, c);//((r*a.rows) + c)
+                }
+                return Matrix(a.rows, a.cols, arr);
+            }
+            else if (b.cols == 1 && sizeb != 1)
+            {
+                double *arr = new double[a.rows * a.cols];
+                for(size_t r = 0; r < a.rows; r++)
+                {
+                    for(size_t c = 0; c < a.cols; c++)
+                        arr[a.getIdx(r, c)] = a(r, c) - b(r, 0);//((r*a.rows) + c)
+                }
+                return Matrix(a.rows, a.cols, arr);
+            }
+            else if (sizeb == 1)
+            {
+                if (a.cols == 1)
+                {
+                    double *arr = new double[a.rows * a.cols];
+                    for(size_t r = 0; r < a.rows; r++)
+                    {
+                        for(size_t c = 0; c < a.cols; c++)
+                            arr[a.getIdx(r, c)] = a(r, 0) - b(0, 0);//((r*a.rows) + c)
+                    }
+                    return Matrix(a.rows, a.cols, arr);
+                }
+                if (a.rows == 1)
+                {
+                    double *arr = new double[a.rows * a.cols];
+                    for(size_t r = 0; r < a.rows; r++)
+                    {
+                        for(size_t c = 0; c < a.cols; c++)
+                            arr[a.getIdx(r, c)] = a(0, c) - b(0, 0);//((r*a.rows) + c)
+                    }
+                    return Matrix(a.rows, a.cols, arr);
+                }
+            }
+        }
+        else { /**@todo:subtracting smaller matrix and b not a vector*/ }
+    }
     if(a.rows != b.rows || a.cols != b.cols) exit(1);
     double *arr = new double[a.rows * a.cols];
     for(size_t r = 0; r < a.rows; r++)
     {
         for(size_t c = 0; c < a.cols; c++)
-        {
             arr[a.getIdx(r, c)] = a(r, c) - b(r, c);//((r*a.rows) + c)
-        }
     }
     // no need to delete arr since it becomes nullptr once Matrix is created
     return Matrix(a.rows, b.cols, arr);
@@ -298,4 +353,3 @@ inline void Matrix::setCols(size_t c)
 {
     cols = c;
 }
-

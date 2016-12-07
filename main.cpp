@@ -42,11 +42,6 @@ int main() {
     }
     Matrix m6(rows, cols, m);
 
-
-
-
-
-
     cout << "m6:\n" << m6 << endl;
     m5 = m6;
     ~m6;
@@ -64,6 +59,26 @@ int main() {
     cout << "m8 +=: \n" << m8 << endl;
     m9 -= m8;
     cout << "m9 -=: \n" << m9 << endl;
-    cout << "Hello, World!" << endl;
+
+    Matrix v1(1,5,1);
+    cout << "v1: \n" << v1 << endl;
+    Matrix m10 = m1 - v1;
+    cout << "m10 -: \n" << m10 << endl;
+
+    double* tmp = new double[5]{1,2,3,4,5};
+
+    Matrix v2(5,1,tmp);
+    cout << "v2: \n" << v2 << endl;
+    Matrix m11 = m1 - v2;
+    cout << "m11 -: \n" << m11 << endl;
+
+    Matrix pt1(1,1,5);
+    cout << "pt1: \n" << pt1 << endl;
+    Matrix v3 = v2 - pt1;
+    cout << "v3 - 1 block: \n" << v3 << endl;
+
+    //expected to exit program bc this is not allowed
+    Matrix m13 = v1 - m1;
+    cout << "test\n";
     return 0;
 }
