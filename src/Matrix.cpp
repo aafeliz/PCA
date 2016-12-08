@@ -121,7 +121,7 @@ Matrix operator ~(const Matrix& a)
 {
     const size_t size = a.rows * a.cols;
     double *arr = new double[size];
-
+    
     size_t r = 0, c = 0, tidx = 0;
     for(size_t i = 0; i < size; i++)
     {
@@ -130,14 +130,14 @@ Matrix operator ~(const Matrix& a)
         tidx = (c*a.rows) + r;
         arr[tidx] = a.m[i];
     }
-
+    
     return Matrix(a.cols, a.rows, arr);
 }
 void operator ~(Matrix& a)
 {
     const size_t size = a.rows * a.cols;
     double *arr = new double[size];
-
+    
     for(size_t i = 0; i < size; i++)
         arr[i] = a.m[i];
 
@@ -152,7 +152,7 @@ void operator ~(Matrix& a)
     size_t temp = a.cols;
     a.cols = a.rows;
     a.rows = temp;
-
+    
     delete[] arr;
     return;
     //return Matrix(a.cols, a.rows, arr);
@@ -182,10 +182,10 @@ Matrix operator -(const Matrix& a, const Matrix& b)
 {
     int sizea = a.rows*a.cols;
     int sizeb = b.rows*b.cols;
-
+    
     //can't subtract large b from small a
     if (sizeb > sizea) exit(1);
-
+    
     else if (sizea != sizeb)
     {
         if (b.rows == a.rows || b.cols == a.cols)
@@ -287,6 +287,25 @@ Matrix Matrix::operator -=(const Matrix& b)
     return *this;
 }
 
+Matrix Matrix::getColumn(size_t col)
+{
+    double *arr = new double[rows];
+    for(size_t i = 0; i < rows; i++)
+    {
+        arr[i] = this->m[getIdx(i, col)];
+    }
+    return Matrix(rows, 1);
+}
+Matrix Matrix::getRow(size_t row)
+{
+    double *arr = new double[cols];
+    for(size_t i = 0; i < cols; i++)
+    {
+        arr[i] = this->m[getIdx(row, i)];
+    }
+    return Matrix(1, cols);
+}
+
 /*
 // as features with input data are being read the vectors get
 // placed into the matrix
@@ -325,7 +344,7 @@ void Matrix::gaussFullPivoting(vector<double>&x, vector<double>& B) // solve (*t
 // write out matrix to a stream
 std::ostream& operator<<(std::ostream& s, const Matrix& m)
 {
-	double val;
+    double val;
     for(size_t i = 0; i < m.rows; i++)
     {
         for(size_t j = 0; j < m.cols; j++)

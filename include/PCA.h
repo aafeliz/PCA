@@ -53,6 +53,10 @@ private:
      */
     void calcMeans();
     /**@brief
+     * calculate xi - mu
+     */
+    void
+    /**@brief
      * calculate scatter matrix
      * which will contain covariance and variance
      * sMat = sum((xi - mu)(xi - mu)')
@@ -63,6 +67,20 @@ private:
 
 public:
     PCA();
+    /**@brief: constructor for PCA when features and data are being passed in
+     */
+    PCA(const Matrix& featuresData);
+    /**@brief: deconstructor
+     */
+    ~PCA();
+    /**@brief: copy constructor
+     */
+    PCA(const PCA&);
+    /**@brief: move constructor
+     */
+    PCA(PCA&&);
+    
+    
     /**@brief
      * two different to pass in input data
      * 1- pass in one feature, or multiple features at a time.

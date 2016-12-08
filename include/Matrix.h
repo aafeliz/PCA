@@ -78,7 +78,10 @@ public:
     // subtract and 1xn or nx1 matrix from this matrix
     void minusVect(const Matrix& vec);
 
-
+    // get a column or row in matrix form
+    Matrix getColumn(size_t col);
+    Matrix getRow(size_t row);
+    
     /*
     // as features with input data are being read the vectors get
     // placed into the matrix

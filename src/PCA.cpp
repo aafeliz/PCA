@@ -21,6 +21,14 @@ PCA::PCA(): numFeatures(0)
 {
     featuresData.clear();
 }
+
+
+/**@brief: constructor for PCA when features and data are being passed in
+ */
+PCA::PCA(const Matrix& featuresData)
+{
+    this->featuresData = featuresData;
+}
 void PCA::passFeaturesData(int numFeatures, ...)
 {
     va_list args;
@@ -126,6 +134,16 @@ void PCA::add2total(vector<vector<double>> &total, vector<vector<double>> curren
 
 void PCA::calcScatterMatrix()
 {
+    Matrix scatterMat(mu.rows, mu.rows, 0);
+    for(size_t c = 0; c < featuresData.cols; c++)
+    {
+        // calc all xi - mu
+        Matrix xi_mu = featuresData.getColumn(c) - mu;
+        // calc sum((xi-mu) * (xi-mu))
+        Matrix xi_mu2 = xi-mu * ~xi-mu;
+        scatterMat += xi_mu2;
+    }
+    /*
     // calc all xi-mu
     vector<vector<double>> x_mus; // all x-mu for all features
     vector<double> featDif; // all x-mu for individual features
@@ -164,6 +182,7 @@ void PCA::calcScatterMatrix()
         vector<vector<double>> cScatterMat = vectorMultItTranspose(inputN);
         add2total(scatterMat, cScatterMat);
     }
+     */
     this->sMat = scatterMat;
 }
 
