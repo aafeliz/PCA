@@ -1,35 +1,37 @@
-#if 0
 /** @file PCA.cpp
  *  @brief Principal Component Analysis Class.
  *
- *  Contains class to calculate most sinigicant feature for a given class
+ *  Contains class to calculate most significant feature for a given class
  *  and inputs for those features.
  *
  *  @author Ariel Feliz(aafeliz)
- *  @author Elvin (<githubid>)
+ *  @author Elvin Abreu(elvinabreu)
  *  @date 11/26/16
  *  @bug No known bugs.
  *  @todo Need to create methods for eigen decomposition. Providing PCA class with eigen value & vector.
  */
-#include "PCA.h"
+#include "../include/PCA.h"
 //#include <cstdarg.h> //va_list, va_start, va_end
 #include <assert.h>
-FeatureData::FeatureData(string name, Matrix data): FeatureName(name), data(data) {}
+//FeatureData::FeatureData(std::string name, Matrix data): FeatureName(name), data(data) {}
 
 
-PCA::PCA(): numFeatures(0)
+PCA::PCA()
 {
-    featuresData.clear();
+	numFeatures = 0;
 }
+
 
 
 /**@brief: constructor for PCA when features and data are being passed in
  */
 PCA::PCA(const Matrix& featuresData)
 {
+	numFeatures = featuresData.rows;
     this->featuresData = featuresData;
 }
-void PCA::passFeaturesData(int numFeatures, ...)
+
+/*void PCA::passFeaturesData(int numFeatures, ...)
 {
     va_list args;
     va_start(args, numFeatures);
@@ -42,8 +44,9 @@ void PCA::passFeaturesData(int numFeatures, ...)
     }
 
     va_end(ap);
-}
-void PCA::passFeaturesData(vector<FeatureData> features)
+}*/
+//@todo need to fix feature data class
+/*void PCA::passFeaturesData(vector<FeatureData> features)
 {
     if(this->inputData.empty())
     {
@@ -55,7 +58,7 @@ void PCA::passFeaturesData(vector<FeatureData> features)
         auto it = this->inputdata.end();
         this->featuresData.insert(it, features.begin(), features.endl());
     }
-}
+}*/
 void PCA::passFeaturesData(Matrix features)
 {
     this->featuresData = features;
@@ -75,21 +78,21 @@ void PCA::calcMeans()///O(numFeatures*numInputsPerFeature)
         this->mu.push_back(avg);
     }*/
     double *arr = new double[numFeatures];
-    for(int r = 0; r < featuresData.rows; r++)
+    for(size_t r = 0; r < featuresData.rows; r++)
     {
         double featSum = 0;
-        for(int c = 0; c < featuresData.cols; c++)
+        for(size_t c = 0; c < featuresData.cols; c++)
             featSum += featuresData(r, c);
         double avg = featSum/((double)featuresData.cols);
         arr[r] = avg;
 
     }
-    //Matrix m(numfeatures, 1, arr);
-    mu = Matrix(numfeatures, 1, arr);
+    //Matrix m(numFeatures, 1, arr);
+    mu = Matrix(numFeatures, 1, arr);
 }
 
-/*
-/**@brief: one xi-mu for all features
+
+/*@brief: one xi-mu for all features
  */
 /*
 vector<vector<double>> PCA::vectorMultItTranspose(vector<double> featsX_mu)
@@ -134,13 +137,13 @@ void PCA::add2total(vector<vector<double>> &total, vector<vector<double>> curren
 
 void PCA::calcScatterMatrix()
 {
-    Matrix scatterMat(mu.rows, mu.rows, 0);
+    Matrix scatterMat(mu.rows, mu.rows, 0.0);
     for(size_t c = 0; c < featuresData.cols; c++)
     {
         // calc all xi - mu
-        Matrix xi_mu = featuresData.getColumn(c) - mu;
+        const Matrix xi_mu = featuresData.getColumn(c) - mu;
         // calc sum((xi-mu) * (xi-mu))
-        Matrix xi_mu2 = xi-mu * ~xi-mu;
+        Matrix xi_mu2 = xi_mu * ~xi_mu;
         scatterMat += xi_mu2;
     }
     /*
@@ -185,8 +188,4 @@ void PCA::calcScatterMatrix()
      */
     this->sMat = scatterMat;
 }
-
-
-
-#endif
-
+PCA::~PCA() {};

@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "Matrix.h"
+#include "../include/Matrix.h"
 #include <cstdint>
 using namespace std;
 

@@ -1,4 +1,3 @@
-#if 0
 /** @file PCA.h
  *  @brief Principal Component Analysis Class.
  *
@@ -6,7 +5,7 @@
  *  and inputs for those features.
  *
  *  @author Ariel Feliz(aafeliz)
- *  @author Elvin (<githubid>)
+ *  @author Elvin Abreu(elvinabreu)
  *  @date 11/26/16
  *  @bug No known bugs.
  *  @todo reimplement methods using support methods from matrix
@@ -16,18 +15,16 @@
 
 #include <vector>
 #include <string>
+#include "Matrix.h"
 
-
-
-class FeatureData
+/*class FeatureData
 {
-
 public:
-    string featureName;
+    std::string featureName;
     Matrix data;
-    FeatureData(string, Matrix);
+    FeatureData(std::string, Matrix);
 
-};
+};*/
 
 /** @warning
  * Do not pass in data with different number of inputs per feature
@@ -55,7 +52,7 @@ private:
     /**@brief
      * calculate xi - mu
      */
-    void
+
     /**@brief
      * calculate scatter matrix
      * which will contain covariance and variance
@@ -87,7 +84,7 @@ public:
      * 2- pass in all features at once.
      */
     void passFeaturesData(int numFeatures, ...); // expecting arguments of type FeatureData
-    void passFeaturesData(vector<FeatureData> features);
+   // void passFeaturesData(vector<FeatureData> features);
     void passFeaturesData(Matrix features);
     /*
      * calculate means and scatter matrix
@@ -97,5 +94,3 @@ public:
 
 };
 #endif //PCA_PCA_H
-
-#endif

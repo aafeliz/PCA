@@ -6,7 +6,7 @@
  *
  *  @author Ariel Feliz(aafeliz)
  *  @author Dov Kruger
- *  @author Elvin (<githubid>)
+ *  @author Elvin Abreu(elvinabreu)
  *  @date 11/27/16
  *  @bug No known bugs.
  *  @todo Need to create methods for eigen decomposition. Providing PCA class with eigen value & vector.
@@ -31,8 +31,8 @@ private:
     size_t getIdx(size_t r, size_t c);
     size_t getIdx(size_t r, size_t c) const;
 public:
-
     size_t rows, cols;
+    Matrix():m(nullptr),rows(0),cols(0) {}
     Matrix(size_t rows, size_t cols, double val = 0): rows(rows), cols(cols)
     {
         m = new double[rows*cols];
@@ -59,6 +59,8 @@ public:
      */
 
     friend Matrix operator ~(const Matrix&);
+    //friend Matrix operator ~(Matrix);
+
     //friend Matrix operator ~(Matrix&);
     /**@brief: transposes matrix being passed in
      */

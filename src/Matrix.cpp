@@ -5,7 +5,7 @@
  *  and inputs for those features.
  *
  *  @author Ariel Feliz(aafeliz)
- *  @author Elvin Abreu(<elvinabreu>)
+ *  @author Elvin Abreu(elvinabreu)
  *  @author Dov Kruger
  *  @date 11/27/16
  *  @bug No known bugs.
@@ -133,6 +133,24 @@ Matrix operator ~(const Matrix& a)
     
     return Matrix(a.cols, a.rows, arr);
 }
+/*
+Matrix operator ~(Matrix a)
+{
+    const size_t size = a.rows * a.cols;
+    double *arr = new double[size];
+
+    size_t r = 0, c = 0, tidx = 0;
+    for(size_t i = 0; i < size; i++)
+    {
+        r = i / a.cols;
+        c = i % a.cols;
+        tidx = (c*a.rows) + r;
+        arr[tidx] = a.m[i];
+    }
+
+    return Matrix(a.cols, a.rows, arr);
+}*/
+
 void operator ~(Matrix& a)
 {
     const size_t size = a.rows * a.cols;
