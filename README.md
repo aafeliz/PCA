@@ -13,3 +13,6 @@ To ensure valid results, we will choose a popular data set and compare our resul
 # Build Instructions
 To build an executable in a UNIX environment, open Terminal navigate to PCA directory and type:
     $ g++ -std=c++11 -o PCA main.cpp src/Matrix.cpp src/PCA.cpp
+
+#Learning Sources
+Visit http://setosa.io/ev/principal-component-analysis/ for a graphical, simplified explanation of PCA.
