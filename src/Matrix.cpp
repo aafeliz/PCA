@@ -43,6 +43,18 @@ Matrix::Matrix(size_t r, size_t c, double *arr)
     }
     delete[] arr;
 }
+Matrix::Matrix(size_t rows, size_t cols, double **data)
+{
+    this->rows = rows;
+    this->cols = cols;
+    m = new double[rows * cols];
+    for(size_t r = 0; r < rows; r++)
+    {
+        for(size_t c = 0; c < cols; c++)
+            m[getIdx(r, c)] = data[r][c];
+    }
+}
+
 Matrix::~Matrix()
 {
     delete[] m;
@@ -117,7 +129,7 @@ double Matrix:: operator T(size_t r, size_t c) const
     return m[r*cols + c];
 }
 */
-Matrix operator ~(const Matrix& a)
+Matrix& operator ~(const Matrix& a)
 {
     const size_t size = a.rows * a.cols;
     double *arr = new double[size];
@@ -131,7 +143,7 @@ Matrix operator ~(const Matrix& a)
         arr[tidx] = a.m[i];
     }
     
-    return Matrix(a.cols, a.rows, arr);
+    return *new Matrix(a.cols, a.rows, arr);
 }
 /*
 Matrix operator ~(Matrix a)
@@ -312,7 +324,7 @@ Matrix Matrix::getColumn(size_t col)
     {
         arr[i] = this->m[getIdx(i, col)];
     }
-    return Matrix(rows, 1);
+    return Matrix(rows, 1, arr);
 }
 Matrix Matrix::getRow(size_t row)
 {
@@ -321,7 +333,7 @@ Matrix Matrix::getRow(size_t row)
     {
         arr[i] = this->m[getIdx(row, i)];
     }
-    return Matrix(1, cols);
+    return Matrix(1, cols, arr);
 }
 
 /*

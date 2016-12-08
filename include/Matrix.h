@@ -33,6 +33,12 @@ private:
 public:
     size_t rows, cols;
     Matrix():m(nullptr),rows(0),cols(0) {}
+    
+    /**@brief: constructor for recieving a double array in the form of double pointer
+     * data[r][c]  
+     */
+    Matrix(size_t rows, size_t cols, double **data);
+    
     Matrix(size_t rows, size_t cols, double val = 0): rows(rows), cols(cols)
     {
         m = new double[rows*cols];
@@ -58,7 +64,7 @@ public:
      * T ===> ~
      */
 
-    friend Matrix operator ~(const Matrix&);
+    friend Matrix& operator ~(const Matrix&);
     //friend Matrix operator ~(Matrix);
 
     //friend Matrix operator ~(Matrix&);

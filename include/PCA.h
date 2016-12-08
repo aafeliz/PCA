@@ -90,6 +90,14 @@ public:
      * calculate means and scatter matrix
      */
     void calcStats();
+    
+    void outputData();
+    
+    void outputMu();
+    
+    void outputScatterMatrix();
+    
+    void outputStats();
 
 
 };

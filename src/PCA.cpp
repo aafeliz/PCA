@@ -92,58 +92,24 @@ void PCA::calcMeans()///O(numFeatures*numInputsPerFeature)
 }
 
 
-/*@brief: one xi-mu for all features
+/**@field:
+  *@bug: friend operator wont take matrix as const matrix& unless it is const 
  */
-/*
-vector<vector<double>> PCA::vectorMultItTranspose(vector<double> featsX_mu)
-{
-    vector<vector<double>> matrix(featsX_mu.size());
-    for(int i = 0; i < featsX_mu.size(); i++)
-    {
-        matrix[i].reserve(featsX_mu.size());
-    }
-
-    //int i = 0;
-    for(int col = 0; col < featsX_mu.size(); col++)
-    {
-        //int j = 0;
-        for(int row = 0; row < featsX_mu.size(); row++)
-        {
-            matrix[col][row] = featsX_mu[row] * featsX_mu[col];
-
-           //j++;
-        }
-        //i++;
-    }
-    return matrix;
-}
-void PCA::add2total(vector<vector<double>> &total, vector<vector<double>> current)
-{
-
-    if(total.empty())
-    {
-        total = current;
-        return;
-    }
-    for(auto from = total.begin(), to = current.begin(); from != total.end() && to != total.end();++from, ++to)
-    {
-        for(auto fItem = *from.begin(), tItem = *to.begin(); fItem != *from.end() && tItem != *to.end();++fItem, ++tItem)
-        {
-            *fItem += *tItem;
-        }
-    }
-}
-*/
 
 void PCA::calcScatterMatrix()
 {
     Matrix scatterMat(mu.rows, mu.rows, 0.0);
+    //Matrix xi;
+    //Matrix xi_mu;
     for(size_t c = 0; c < featuresData.cols; c++)
     {
         // calc all xi - mu
-        const Matrix xi_mu = featuresData.getColumn(c) - mu;
+        const Matrix xi = featuresData.getColumn(c);
+        //xi = featuresData.getColumn(c);
+        //xi_mu = xi - mu;
+        const Matrix xi_mu = xi - mu;
         // calc sum((xi-mu) * (xi-mu))
-        Matrix xi_mu2 = xi_mu * ~xi_mu;
+        Matrix xi_mu2 = xi_mu * ~(xi_mu);
         scatterMat += xi_mu2;
     }
     /*
@@ -187,5 +153,32 @@ void PCA::calcScatterMatrix()
     }
      */
     this->sMat = scatterMat;
+}
+void PCA::calcStats()
+{
+    calcMeans();
+    calcScatterMatrix();
+    
+}
+
+void PCA::outputData()
+{
+    std::cout <<"Data entered is :\n" << featuresData << std::endl;
+}
+void PCA::outputMu()
+{
+    
+    std::cout <<"Mu's are :\n" << mu << std::endl;
+}
+
+void PCA::outputScatterMatrix()
+{
+    std::cout <<"Scatter Matrix is:\n" << sMat << std::endl;
+}
+
+void PCA::outputStats()
+{
+    outputMu();
+    outputScatterMatrix();
 }
 PCA::~PCA() {};
