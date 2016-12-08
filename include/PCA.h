@@ -32,7 +32,7 @@ public:
 class PCA
 {
 private:
-    int numFeatures;
+    size_t numFeatures;
     Matrix featuresData;
     /**@brief: this can be passed in to know if rows/cols are input nums or features
      * @todo: can be done after matrix class is of type template

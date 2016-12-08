@@ -198,8 +198,8 @@ Matrix operator +(const Matrix& a, const Matrix& b)
 
 Matrix operator -(const Matrix& a, const Matrix& b)
 {
-    int sizea = a.rows*a.cols;
-    int sizeb = b.rows*b.cols;
+    size_t sizea = a.rows*a.cols;
+    size_t sizeb = b.rows*b.cols;
     
     //can't subtract large b from small a
     if (sizeb > sizea) exit(1);
