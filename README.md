@@ -9,3 +9,7 @@ Features our teaching method, that will show of what happens to the data under v
 
 # Data
 To ensure valid results, we will choose a popular data set and compare our results with the results of PCA on matlab or python sklearn.
+
+# Build Instructions
+To build an executable in a UNIX environment, open Terminal navigate to PCA directory and type:
+    $ g++ -std=c++11 -o PCA main.cpp src/Matrix.cpp src/PCA.cpp
