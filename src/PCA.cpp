@@ -93,7 +93,7 @@ void PCA::calcMeans()///O(numFeatures*numInputsPerFeature)
 
 
 /**@field:
-  *@bug: friend operator wont take matrix as const matrix& unless it is const 
+  *@bug: friend operator wont take matrix as const matrix& unless it is const
  */
 
 void PCA::calcScatterMatrix()

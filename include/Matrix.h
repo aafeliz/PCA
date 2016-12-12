@@ -17,6 +17,7 @@
 #include <fstream> // ostream, ofstream
 #include <iostream>
 #include <stdlib.h>
+#include <cmath> // sqrt, abs
 /**@todo: switch everything to template type to make class general to data type.
                 Matrix operator T(const Matrix&);
                 Matrix operator T(Matrix&);
@@ -55,8 +56,8 @@ public:
     Matrix(Matrix&& );
     Matrix& operator =(const Matrix&);
     // retrieve individual matrix values from array requested in matrix from
-    double operator ()(size_t r, size_t c);
-    double operator ()(size_t r, size_t c) const;
+    double& operator ()(size_t r, size_t c);
+    double& operator ()(size_t r, size_t c) const;
     //double& operator[]( size_t, size_t);
     inline void setValue(size_t, size_t, double);
 
@@ -65,9 +66,6 @@ public:
      */
 
     friend Matrix& operator ~(const Matrix&);
-    //friend Matrix operator ~(Matrix);
-
-    //friend Matrix operator ~(Matrix&);
     /**@brief: transposes matrix being passed in
      */
     friend void operator ~(Matrix&);
@@ -83,12 +81,32 @@ public:
     Matrix operator +=(const Matrix&);
     // subtract another matrix from this one, changing this
     Matrix operator -=(const Matrix&);
-    // subtract and 1xn or nx1 matrix from this matrix
-    void minusVect(const Matrix& vec);
+    
+    /**@todo:
+     */
+    // diganoal everything else zero
+    Matrix eye(const Matrix& orig);
+    Matrix minor(const Matrix& z, const Matrix& k);
+    Matrix* eigen(const Matrix& A);
+    void eigen(const Matrix& A, Matrix& Q, Matrix& R);
+    
+    void houseHolder(Matrix& A, Matrix& d, Matrix& e);
+    void ql(Matrix& A, Matrix& d, Matrix& e);
+    Matrix makeD(const Matrix& d, const Matrix& e);
+    
+    
+    // will return array as [Q, R]
+    Matrix* qrDecomp(const Matrix& A);
+    // will change Q and R passed in
+    void qrDecomp(const Matrix& A, Matrix& Q, Matrix& R);
+    
+    // will return matrix to qrDecomp
+    //Matrix houseHolder(const Matrix& A);
 
     // get a column or row in matrix form
     Matrix getColumn(size_t col);
     Matrix getRow(size_t row);
+    Matrix unitVector(size_t col);
     
     /*
     // as features with input data are being read the vectors get
@@ -108,6 +126,8 @@ public:
     //friend Matrix& operator ^(const Matrix&, size_t);
     /**@brief: write I/O matrix to a stream
      */
+    
+    
     friend std::ostream& operator<<(std::ostream&, const Matrix&); // no const because using non const type operator()
     // read in matrix from a stream
     friend std::istream& operator >>(std::istream&, Matrix&);

@@ -90,11 +90,11 @@ Matrix& Matrix::operator =(const Matrix& orig)
     return *this;
 }
 
-double Matrix::operator ()(size_t r, size_t c)
+double& Matrix::operator ()(size_t r, size_t c)
 {
     return m[getIdx(r, c)];
 }
-double Matrix::operator()(size_t r, size_t c) const
+double& Matrix::operator()(size_t r, size_t c) const
 {
     return m[getIdx(r, c)];
 }
@@ -316,6 +316,183 @@ Matrix Matrix::operator -=(const Matrix& b)
     }
     return *this;
 }
+/////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+
+
+// will return array as [Q, R]
+Matrix* Matrix::eigen(const Matrix &A)
+{
+    const size_t m = A.cols;
+    Matrix d, e, Va = A;
+    
+    houseHolder(Va, d, e);
+    ql(Va, d, e);
+    
+    
+    Matrix *eig = new Matrix[2];
+    eig[0] = Va;
+    eig[1] = makeD(d, e);
+    
+    return eig;
+}
+// will change Q and R passed in
+void Matrix::eigen(const Matrix& A, Matrix& V, Matrix& D)
+{
+    const size_t n = A.cols;
+    Matrix d, e, Va = A;
+    
+    houseHolder(Va, d, e);
+    ql(Va, d, e);
+    
+    V = Va;
+    D = makeD(d, e);
+    
+    return;
+}
+
+void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e)
+{
+    // Credit written in GO:https://github.com/skelterjohn/go.matrix/blob/go1/dense_eigen.go
+    //  This is derived from the Algol procedures tred2 by
+    //  Bowdler, Martin, Reinsch, and Wilkinson, Handbook for
+    //  Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
+    //  Fortran subroutine in EISPACK.
+    
+    const size_t n = A.cols;
+    for(int i = 0; i < n; i++)
+        d(0, i) = A(n-1, i);
+    
+    // householder reduction to tridiagnal form
+    double scale, h, f, g, hh;
+    for(size_t i = n-1; i > 0; i--)
+    {
+        // keep it from overflow
+        scale = 0.0, h = 0.0, f = 0.0, g = 0.0;
+        for(size_t j = 0; j < i; j++)
+            scale += abs(d(0, j));
+        
+        // generate Householder vector
+        for(size_t j = 0; j < i; j++)
+        {
+            d(0, j) /= scale;
+            h +=  d(0, j) * d(0, j);
+        }
+        f = d(0, i-1);
+        g = sqrt(h);
+        if(f > 0) g = -g;
+        e(0, i) = scale * g;
+        h = h - f*g;
+        d(0, i-1) = f - g;
+        for(size_t j = 0; j < i; j++)
+            e(0, j) = 0.0;
+        // similarity transformation to remaining columns
+        for(size_t j =0; j < i; j++)
+        {
+            f = d(0,j);
+            A(j, i) = f;
+            g = e(0,j) + A(j, j)*f;
+            for(size_t k = 0; k <= i-1; k++)
+            {
+                g += A(k, j) * d(0,k);
+                e(0,k) += A(k, j) * f;
+            }
+            e(0,j) = g;
+        }
+        f = 0.0;
+        for(size_t j = 0; j < i; j++)
+        {
+            e(0,j) /= h;
+            f += e(0, j) * d(0, j);
+        }
+        hh = f / (h + h);
+        for(size_t j = 0; j < i; j++)
+            e(0,j) -= hh * d(0,j);
+        for(size_t j = 0; j < i; j++)
+        {
+            f = d(0, j);
+            g = e(0, j);
+            for(size_t k = j; k <= i-1; k++)
+                A(k,j) -= (f*e(0,k)) + (g*d(0,k));
+            d(0,j) = A(i-1, j);
+            A(i, j) = 0.0;
+        }
+        d(0,i) = h;
+    }
+    
+    
+    // Accumulate Transformation
+    //double h, g;
+    for(size_t i = 0; i < n-1; i++)
+    {
+        A(n-1, i) = A(i, i);
+        A(i, i) = 1.0;
+        h = d(0, i+1);
+        if(h != 0.0)
+        {
+            for(size_t j = 0; j <= i; j++)
+                d(0, j) = A(j, i+1) / h;
+            for(size_t j = 0; j <= i; j++)
+            {
+                g = 0.0;
+                for(size_t k = 0; k <= i; k++)
+                    g += A(k, i+1) * A(k, j);
+                for(size_t k = 0; k <= i; k++)
+                    A(k, j) -= g * d(0, k);
+            }
+        }
+        for(size_t j = 0; j <= i; j++)
+            A(j, i+1) = 0.0;
+        
+    }
+    for(size_t i = 0; i < n; i++)
+    {
+        d(0, i) = A(n-1, i);
+        A(n-1, i) = 0.0;
+    }
+    A(n-1, n-1) = 1.0;
+    e(0, 0) = 0.0;
+}
+void Matrix::ql(Matrix& A, Matrix& d, Matrix& e)
+{
+    
+}
+Matrix Matrix::makeD(const Matrix& d, const Matrix& e)
+{
+    const size_t n = d.cols;
+    int sign, offset;
+    Matrix X(n, n);// gives me of zeros
+    for(size_t i = 0; i < n; i++)
+    {
+        sign = e(0, i);
+        X(i, i) = d(0, i); // assuming its just one row according to caller eigen()
+        offset = sign < 0? -1: 1;
+        X(i, i + offset) = e(0, 1);
+    }
+    return X;
+}
+/*
+// will return array as [Q, R]
+Matrix* Matrix::qrDecomp(const Matrix &A)
+{
+    return new Matrix();
+}
+// will change Q and R passed in
+void Matrix::qrDecomp(const Matrix& A, Matrix& Q, Matrix& R)
+{
+    const size_t m = A.rows;
+    int sign = A(0,0) >= 0 ? 1:-1;
+    
+}
+
+// will return array as [Q, R]
+Matrix Matrix::houseHolder(const Matrix& A)
+{
+    return Matrix();
+}
+*/
 
 Matrix Matrix::getColumn(size_t col)
 {
@@ -336,35 +513,6 @@ Matrix Matrix::getRow(size_t row)
     return Matrix(1, cols, arr);
 }
 
-/*
-// as features with input data are being read the vectors get
-// placed into the matrix
-friend Matrix::Matrix operator <<(const Matrix&)
-{
-    // @todo: implement function
-}
-
-vector<double> Matrix::gaussPartialPivoting(vector<double>& B) // solve (*this)x = B, returning x.
-{
-    // @todo: implement function
-
-    return vector<double>;
-}
-void Matrix::gaussPartialPivoting(vector<double>&x, vector<double>& B)// solve (*this)x = B, modifying x that is passed by reference
-{
-    // @todo: implement function
-    return;
-}
-
-vector<double> Matrix::gaussFullPivoting(vector<double>& B) // solve (*this)x = B, returning x.
-{
-    // @todo: implement function
-}
-void Matrix::gaussFullPivoting(vector<double>&x, vector<double>& B) // solve (*this)x = B, modifying x that is passed by reference
-{
-    // @todo: implement function
-}
-*/
 // a to the integer power k
 /*friend Matrix& Matrix::operator ^(const Matrix& a, size_t k)
 {
