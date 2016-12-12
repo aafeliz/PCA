@@ -457,7 +457,108 @@ void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e)
 }
 void Matrix::ql(Matrix& A, Matrix& d, Matrix& e)
 {
-    
+    const size_t n = A.cols;
+    for(size_t i = 1; i < n; i++)
+        e(0,i-1) = e(0, i);
+    e(0, n-1);
+    size_t m;
+    double f, t, tst1 = 0.0, eps = pow(2.0, -52.0);
+    for(size_t l = 0; l < n; l++)
+    {
+        // find small subdianal element;
+        t = (std::abs(d(0,l)) + std::abs(e(0,l)));
+        tst1 = tst1 > t ? tst1 : t;
+        
+        for(m = l; m < n; m++)
+            if(e(0,m) <= eps * tst1) break;
+        // if m == l, d(0,l) is an eigen value
+        size_t iter = 0;
+        double g, p, r, dl1, h, c ,c2, c3, el1, s, s2;
+        if(m > l)
+        {
+            for(;;)
+            {
+                iter++;
+                // compute implisit shift;
+                g = d(0, l);
+                p = (d(0, l+1) - g) / (2.0 * e(0, l));
+                r = sqrt(p*p + 1.0);
+                if(p < 0)
+                    r = -r;
+                d(0, l) = e(0, l) / (p + r);
+                d(0, l+1) = e(0, l) * (p + r);
+                dl1 = d(0, l+1);
+                h = g - d(0, l);
+                for(size_t i = l+2; i < n; i++)
+                    d(0, i) -= h;
+                f = f + h;
+                
+                // implisi QL transformation
+                p = (0, m);
+                c = c2 = c3 = 1.0;
+                el1 = e(0, l+1);
+                s = 0.0;
+                s2 = 0.0;
+                for(size_t i = m - 1; i >= l; i--)
+                {
+                    c3 = c2;
+                    c2 = c;
+                    s2 = s;
+                    g = c * e(0, i);
+                    h = c * p;
+                    r = sqrt((p * p) + (e(0, i)*e(0, i)));
+                    e(0, i+1) = s * r;
+                    s = e(0, i)/r;
+                    c = p / r;
+                    p = c * d(0, i) - (s * g);
+                    d(0, i+1) = h + (s*((c*g) + (s*d(0,i))));
+                    
+                    // accummulate transformation
+                    for(size_t j = 0; j < n; j++)
+                    {
+                        h = A(j, i+1);
+                        A(j, i+1) = s*A(j, i) + (c * h);
+                        A(j, i) = c * A(j, i) - (s * h);
+                    }
+                }
+                p = -s * s2 * c3 * el1 * e(0, l) / dl1;
+                e(0, l) = s*p;
+                d(0, l) = c*p;
+                
+                // check for convergece
+                if(!(std::abs(e(0, l) > (eps * tst1))))
+                    break;
+            }
+        }
+        d(0, l) = d(0, l) + f;
+        e(0, l) = 0.0;
+        
+    }
+    // sort eigen values and corresponding vectors;
+    double k, p;
+    for(size_t i = 0; i < n-1; i++)
+    {
+        k = i;
+        p = d(0,i);
+        for(size_t j = i +1; j < n; j++)
+        {
+            if(d(0, j) < p)
+            {
+                k = j; p = d(0, j);
+            }
+        }
+        if(k != i)
+        {
+            d(0, k) = d(0, i);
+            d(0, i) = p;
+            for(size_t j = 0; j < n; j++)
+            {
+                p = A(j, i);
+                A(j, i) = A(j, k);
+                A(j, k) = p;
+            }
+        }
+    }
 }
 Matrix Matrix::makeD(const Matrix& d, const Matrix& e)
 {
