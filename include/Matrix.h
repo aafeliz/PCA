@@ -87,23 +87,7 @@ public:
     // subtract another matrix from this one, changing this
     Matrix operator -=(const Matrix&);
     
-    /**@todo:
-     */
-    // diganoal everything else zero
-    Matrix eye(const Matrix& orig);
-    Matrix minor(const Matrix& z, const Matrix& k);
-    Matrix* eigen(const Matrix& A);
-    void eigen(const Matrix& A, Matrix& Q, Matrix& R);
     
-    void houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
-    void ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
-    Matrix makeD(const Matrix& d, const Matrix& e);
-    
-    
-    // will return array as [Q, R]
-    Matrix* qrDecomp(const Matrix& A);
-    // will change Q and R passed in
-    void qrDecomp(const Matrix& A, Matrix& Q, Matrix& R);
     
     // will return matrix to qrDecomp
     //Matrix houseHolder(const Matrix& A);

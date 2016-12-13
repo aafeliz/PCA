@@ -86,8 +86,16 @@ void TestM() {
     Matrix v3 = v2 - pt1;
     cout << "v3 - 1 block: \n" << v3 << endl;
     
+    // testing reading and writing to files
+    Matrix mat;
+    //load matrix with csv file
+    mat.readFile("data2.csv");
+    mat.writeFile("matrix.csv");
+    
     //expected to exit program bc this is not allowed
     Matrix m13 = v1 - m1;
     cout << "test\n";
+    
+    
     return;
 }

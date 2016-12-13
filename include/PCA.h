@@ -41,6 +41,7 @@ private:
 
     Matrix mu; // more like a vector so it [numFeatures(rows) x 1(cols)]
     Matrix sMat; // scatter matrix
+    Matrix A;
     Matrix eigenVals; // matrix of eigen values
     Matrix eigenVect; // matrix of eigen vectors
 
@@ -76,6 +77,24 @@ public:
     /**@brief: move constructor
      */
     PCA(PCA&&);
+    
+    /**@todo:
+     */
+    // diganoal everything else zero
+    Matrix eye(const Matrix& orig);
+    Matrix minor(const Matrix& z, const Matrix& k);
+    Matrix* eigen();
+    void eigen(Matrix& Q, Matrix& R);
+    
+    void houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
+    void ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
+    Matrix makeD(const Matrix& d, const Matrix& e, const size_t& r);
+    
+    
+    // will return array as [Q, R]
+    Matrix* qrDecomp(const Matrix& A);
+    // will change Q and R passed in
+    void qrDecomp(const Matrix& A, Matrix& Q, Matrix& R);
     
     
     /**@brief

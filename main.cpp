@@ -32,7 +32,7 @@ int main()
     double *data2 = new double[rows*cols];
     for(size_t i = 0; i< rows*cols; i++)
     {
-        data2[i] =in2[i];
+        data2[i] = in2[i];
     }
     
     Matrix m(rows, cols, data);
@@ -59,19 +59,31 @@ int main()
      
      */
 
-    Matrix me;
+    //Matrix me;
     //load matrix with csv file
-    me.readFile("/files/data2.csv");
-    me.writeFile("matrix.csv");
-
+    //me.readFile("data2.csv");
+    //me.writeFile("matrix.csv");
+    //cout << me;
+    double *arr = new double[9];
+    double input[] = {1, 0, 2, 0, 2, 0, 2, 0, 1};
+    for(size_t i = 0; i < 9; i++)
+    {
+        arr[i] = input[i];
+    }
+    Matrix mData(3, 3, arr);
+    PCA p(mData);
+    p.outputData();
+    p.calcStats();
+    p.outputStats();
     //Matrix A = lt.getScatter();
-    //Matrix *eig = new Matrix[2];
+    Matrix *eig = p.eigen();//new Matrix[2];
+    Matrix *eig2 = lt.eigen();
     //A.eigen(A, eig[0], eig[1]);
     
-    //cout << "Eig[0]:\n" << eig[0];
+    cout << "Eig[0]:\n" << eig[0];
     
-    //cout << "\nEig[1]: \n" << eig[1];
-    cout << me;
+    cout << "\nEig[1]: \n" << eig[1];
+    
     
     
     return 0;
