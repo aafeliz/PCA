@@ -181,4 +181,8 @@ void PCA::outputStats()
     outputMu();
     outputScatterMatrix();
 }
+Matrix PCA::getScatter()
+{
+    return Matrix(this->sMat);
+}
 PCA::~PCA() {};

@@ -325,11 +325,14 @@ Matrix Matrix::operator -=(const Matrix& b)
 // will return array as [Q, R]
 Matrix* Matrix::eigen(const Matrix &A)
 {
-    const size_t m = A.cols;
+    const size_t n = A.cols;
     Matrix d, e, Va = A;
     
-    houseHolder(Va, d, e);
-    ql(Va, d, e);
+    for(size_t i = 0; i < A.rows; i++)
+    {
+        houseHolder(Va, d, e, i);
+        ql(Va, d, e, i);
+    }
     
     
     Matrix *eig = new Matrix[2];
@@ -343,17 +346,18 @@ void Matrix::eigen(const Matrix& A, Matrix& V, Matrix& D)
 {
     const size_t n = A.cols;
     Matrix d, e, Va = A;
-    
-    houseHolder(Va, d, e);
-    ql(Va, d, e);
-    
+    for(size_t i = 0; i < n; i++)
+    {
+        houseHolder(Va, d, e, i);
+        ql(Va, d, e, i);
+    }
     V = Va;
     D = makeD(d, e);
     
     return;
 }
 
-void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e)
+void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
 {
     // Credit written in GO:https://github.com/skelterjohn/go.matrix/blob/go1/dense_eigen.go
     //  This is derived from the Algol procedures tred2 by
@@ -363,7 +367,7 @@ void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e)
     
     const size_t n = A.cols;
     for(int i = 0; i < n; i++)
-        d(0, i) = A(n-1, i);
+        d(row, i) = A(n-1, i);
     
     // householder reduction to tridiagnal form
     double scale, h, f, g, hh;
@@ -372,31 +376,31 @@ void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e)
         // keep it from overflow
         scale = 0.0, h = 0.0, f = 0.0, g = 0.0;
         for(size_t j = 0; j < i; j++)
-            scale += abs(d(0, j));
+            scale += std::abs(d(row, j));
         
         // generate Householder vector
         for(size_t j = 0; j < i; j++)
         {
-            d(0, j) /= scale;
-            h +=  d(0, j) * d(0, j);
+            d(row, j) /= scale;
+            h +=  d(row, j) * d(row, j);
         }
-        f = d(0, i-1);
+        f = d(row, i-1);
         g = sqrt(h);
         if(f > 0) g = -g;
         e(0, i) = scale * g;
         h = h - f*g;
-        d(0, i-1) = f - g;
+        d(row, i-1) = f - g;
         for(size_t j = 0; j < i; j++)
             e(0, j) = 0.0;
         // similarity transformation to remaining columns
         for(size_t j =0; j < i; j++)
         {
-            f = d(0,j);
+            f = d(row,j);
             A(j, i) = f;
             g = e(0,j) + A(j, j)*f;
             for(size_t k = 0; k <= i-1; k++)
             {
-                g += A(k, j) * d(0,k);
+                g += A(k, j) * d(row,k);
                 e(0,k) += A(k, j) * f;
             }
             e(0,j) = g;
@@ -405,21 +409,21 @@ void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e)
         for(size_t j = 0; j < i; j++)
         {
             e(0,j) /= h;
-            f += e(0, j) * d(0, j);
+            f += e(0, j) * d(row, j);
         }
         hh = f / (h + h);
         for(size_t j = 0; j < i; j++)
-            e(0,j) -= hh * d(0,j);
+            e(0,j) -= hh * d(row,j);
         for(size_t j = 0; j < i; j++)
         {
-            f = d(0, j);
+            f = d(row, j);
             g = e(0, j);
             for(size_t k = j; k <= i-1; k++)
-                A(k,j) -= (f*e(0,k)) + (g*d(0,k));
-            d(0,j) = A(i-1, j);
+                A(k,j) -= (f*e(0,k)) + (g*d(row,k));
+            d(row,j) = A(i-1, j);
             A(i, j) = 0.0;
         }
-        d(0,i) = h;
+        d(row,i) = h;
     }
     
     
@@ -429,18 +433,18 @@ void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e)
     {
         A(n-1, i) = A(i, i);
         A(i, i) = 1.0;
-        h = d(0, i+1);
+        h = d(row, i+1);
         if(h != 0.0)
         {
             for(size_t j = 0; j <= i; j++)
-                d(0, j) = A(j, i+1) / h;
+                d(row, j) = A(j, i+1) / h;
             for(size_t j = 0; j <= i; j++)
             {
                 g = 0.0;
                 for(size_t k = 0; k <= i; k++)
                     g += A(k, i+1) * A(k, j);
                 for(size_t k = 0; k <= i; k++)
-                    A(k, j) -= g * d(0, k);
+                    A(k, j) -= g * d(row, k);
             }
         }
         for(size_t j = 0; j <= i; j++)
@@ -449,29 +453,29 @@ void Matrix::houseHolder(Matrix& A, Matrix& d, Matrix& e)
     }
     for(size_t i = 0; i < n; i++)
     {
-        d(0, i) = A(n-1, i);
+        d(row, i) = A(n-1, i);
         A(n-1, i) = 0.0;
     }
     A(n-1, n-1) = 1.0;
     e(0, 0) = 0.0;
 }
-void Matrix::ql(Matrix& A, Matrix& d, Matrix& e)
+void Matrix::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
 {
     const size_t n = A.cols;
     for(size_t i = 1; i < n; i++)
-        e(0,i-1) = e(0, i);
-    e(0, n-1);
+        e(row,i-1) = e(row, i);
+    e(row, n-1);
     size_t m;
     double f, t, tst1 = 0.0, eps = pow(2.0, -52.0);
     for(size_t l = 0; l < n; l++)
     {
         // find small subdianal element;
-        t = (std::abs(d(0,l)) + std::abs(e(0,l)));
+        t = (std::abs(d(row,l)) + std::abs(e(row,l)));
         tst1 = tst1 > t ? tst1 : t;
         
         for(m = l; m < n; m++)
-            if(e(0,m) <= eps * tst1) break;
-        // if m == l, d(0,l) is an eigen value
+            if(e(row,m) <= eps * tst1) break;
+        // if m == l, d(row,l) is an eigen value
         size_t iter = 0;
         double g, p, r, dl1, h, c ,c2, c3, el1, s, s2;
         if(m > l)
@@ -480,23 +484,23 @@ void Matrix::ql(Matrix& A, Matrix& d, Matrix& e)
             {
                 iter++;
                 // compute implisit shift;
-                g = d(0, l);
-                p = (d(0, l+1) - g) / (2.0 * e(0, l));
+                g = d(row, l);
+                p = (d(row, l+1) - g) / (2.0 * e(row, l));
                 r = sqrt(p*p + 1.0);
                 if(p < 0)
                     r = -r;
-                d(0, l) = e(0, l) / (p + r);
-                d(0, l+1) = e(0, l) * (p + r);
-                dl1 = d(0, l+1);
-                h = g - d(0, l);
+                d(row, l) = e(row, l) / (p + r);
+                d(row, l+1) = e(row, l) * (p + r);
+                dl1 = d(row, l+1);
+                h = g - d(row, l);
                 for(size_t i = l+2; i < n; i++)
-                    d(0, i) -= h;
-                f = f + h;
+                    d(row, i) -= h;
+                f += h;
                 
                 // implisi QL transformation
-                p = (0, m);
+                p = (row, m);
                 c = c2 = c3 = 1.0;
-                el1 = e(0, l+1);
+                el1 = e(row, l+1);
                 s = 0.0;
                 s2 = 0.0;
                 for(size_t i = m - 1; i >= l; i--)
@@ -504,14 +508,14 @@ void Matrix::ql(Matrix& A, Matrix& d, Matrix& e)
                     c3 = c2;
                     c2 = c;
                     s2 = s;
-                    g = c * e(0, i);
+                    g = c * e(row, i);
                     h = c * p;
-                    r = sqrt((p * p) + (e(0, i)*e(0, i)));
-                    e(0, i+1) = s * r;
-                    s = e(0, i)/r;
+                    r = sqrt((p * p) + (e(row, i)*e(row, i)));
+                    e(row, i+1) = s * r;
+                    s = e(row, i)/r;
                     c = p / r;
-                    p = c * d(0, i) - (s * g);
-                    d(0, i+1) = h + (s*((c*g) + (s*d(0,i))));
+                    p = c * d(row, i) - (s * g);
+                    d(row, i+1) = h + (s*((c*g) + (s*d(row,i))));
                     
                     // accummulate transformation
                     for(size_t j = 0; j < n; j++)
@@ -521,17 +525,17 @@ void Matrix::ql(Matrix& A, Matrix& d, Matrix& e)
                         A(j, i) = c * A(j, i) - (s * h);
                     }
                 }
-                p = -s * s2 * c3 * el1 * e(0, l) / dl1;
-                e(0, l) = s*p;
-                d(0, l) = c*p;
+                p = -s * s2 * c3 * el1 * e(row, l) / dl1;
+                e(row, l) = s*p;
+                d(row, l) = c*p;
                 
                 // check for convergece
-                if(!(std::abs(e(0, l) > (eps * tst1))))
+                if(!(std::abs(e(row, l) > (eps * tst1))))
                     break;
             }
         }
-        d(0, l) = d(0, l) + f;
-        e(0, l) = 0.0;
+        d(row, l) = d(row, l) + f;
+        e(row, l) = 0.0;
         
     }
     // sort eigen values and corresponding vectors;
@@ -539,18 +543,18 @@ void Matrix::ql(Matrix& A, Matrix& d, Matrix& e)
     for(size_t i = 0; i < n-1; i++)
     {
         k = i;
-        p = d(0,i);
+        p = d(row,i);
         for(size_t j = i +1; j < n; j++)
         {
-            if(d(0, j) < p)
+            if(d(row, j) < p)
             {
-                k = j; p = d(0, j);
+                k = j; p = d(row, j);
             }
         }
         if(k != i)
         {
-            d(0, k) = d(0, i);
-            d(0, i) = p;
+            d(row, k) = d(row, i);
+            d(row, i) = p;
             for(size_t j = 0; j < n; j++)
             {
                 p = A(j, i);
@@ -567,10 +571,10 @@ Matrix Matrix::makeD(const Matrix& d, const Matrix& e)
     Matrix X(n, n);// gives me of zeros
     for(size_t i = 0; i < n; i++)
     {
-        sign = e(0, i);
-        X(i, i) = d(0, i); // assuming its just one row according to caller eigen()
+        sign = e(i, i);
+        X(i, i) = d(i, i); // assuming its just one row according to caller eigen()
         offset = sign < 0? -1: 1;
-        X(i, i + offset) = e(0, 1);
+        X(i, i + offset) = e(i, 1);
     }
     return X;
 }

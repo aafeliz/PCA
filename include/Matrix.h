@@ -90,8 +90,8 @@ public:
     Matrix* eigen(const Matrix& A);
     void eigen(const Matrix& A, Matrix& Q, Matrix& R);
     
-    void houseHolder(Matrix& A, Matrix& d, Matrix& e);
-    void ql(Matrix& A, Matrix& d, Matrix& e);
+    void houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
+    void ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
     Matrix makeD(const Matrix& d, const Matrix& e);
     
     

@@ -89,6 +89,7 @@ public:
     /*
      * calculate means and scatter matrix
      */
+    
     void calcStats();
     
     void outputData();
@@ -98,6 +99,8 @@ public:
     void outputScatterMatrix();
     
     void outputStats();
+    
+    Matrix getScatter();
 
 
 };

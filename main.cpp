@@ -58,6 +58,13 @@ int main()
      37 54
      
      */
+    Matrix A = lt.getScatter();
+    Matrix *eig = new Matrix[2];
+    A.eigen(A, eig[0], eig[1]);
+    
+    cout << "Eig[0]:\n" << eig[0];
+    
+    cout << "\nEig[1]: \n" << eig[1];
     
     
     
