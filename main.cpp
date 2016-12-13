@@ -61,17 +61,17 @@ int main()
 
     Matrix me;
     //load matrix with csv file
-    me.readFile("data.csv");
+    me.readFile("/files/data2.csv");
     me.writeFile("matrix.csv");
 
-    Matrix A = lt.getScatter();
-    Matrix *eig = new Matrix[2];
-    A.eigen(A, eig[0], eig[1]);
+    //Matrix A = lt.getScatter();
+    //Matrix *eig = new Matrix[2];
+    //A.eigen(A, eig[0], eig[1]);
     
-    cout << "Eig[0]:\n" << eig[0];
+    //cout << "Eig[0]:\n" << eig[0];
     
-    cout << "\nEig[1]: \n" << eig[1];
-    
+    //cout << "\nEig[1]: \n" << eig[1];
+    cout << me;
     
     
     return 0;

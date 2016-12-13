@@ -602,13 +602,21 @@ Matrix Matrix::houseHolder(const Matrix& A)
 //read CSV file into matrix object
 void Matrix::readFile(std::string filename)
 {
-	std::vector<double> input;
+    std::vector<double> input;
 	std::fstream inFile;
 	std::string line;
 
 	inFile.open(filename);
-	size_t r = 0;
-	size_t c = 0;
+    try {
+        if(!inFile.is_open()) throw std::string("file did not open\n");
+        
+    }
+    catch(std::string msg)
+    {
+        std::cout << msg;
+    }
+    size_t r = 0;
+    size_t c = 0;
 
 	//get each line of the file, then push each value from every line onto
 	//the back of a vector

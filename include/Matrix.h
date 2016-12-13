@@ -18,6 +18,11 @@
 #include <iostream>
 #include <stdlib.h>
 #include <cmath> // sqrt, abs
+#include <vector>// vector
+#include <sstream>
+#include <string>
+
+
 /**@todo: switch everything to template type to make class general to data type.
                 Matrix operator T(const Matrix&);
                 Matrix operator T(Matrix&);
