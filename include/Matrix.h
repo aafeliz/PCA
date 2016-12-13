@@ -103,6 +103,10 @@ public:
     // will return matrix to qrDecomp
     //Matrix houseHolder(const Matrix& A);
 
+    // read CSV file and generate Matrix
+	void readFile(std::string filename);
+	void writeFile(std::string filename);
+
     // get a column or row in matrix form
     Matrix getColumn(size_t col);
     Matrix getRow(size_t row);

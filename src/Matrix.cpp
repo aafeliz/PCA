@@ -599,6 +599,64 @@ Matrix Matrix::houseHolder(const Matrix& A)
 }
 */
 
+//read CSV file into matrix object
+void Matrix::readFile(std::string filename)
+{
+	std::vector<double> input;
+	std::fstream inFile;
+	std::string line;
+
+	inFile.open(filename);
+	size_t r = 0;
+	size_t c = 0;
+
+	//get each line of the file, then push each value from every line onto
+	//the back of a vector
+	while (!inFile.eof() && getline(inFile, line, '\n'))
+	{
+		std::stringstream ss(line);
+		c=1;
+		while(ss)
+		{
+			std::string s;
+			if (!getline(ss, s, ','))
+				break;
+			double d = std::stod(s);
+			input.push_back(d);
+			c++;
+		}
+		r++;
+	}
+	inFile.close();
+	rows = r;
+	cols = c-1;	//for some reason it ends up being one more than it should
+
+	//copy input vector to m so matrix class can work
+	m = new double[rows*cols];
+    for (size_t i = 0; i < rows*cols; ++i)
+        m[i] = input[i];
+}
+
+//generate a CSV file from a matrix
+void Matrix::writeFile(std::string filename)
+{
+	std::ofstream outFile;
+	outFile.open(filename);
+    double val;
+    for(size_t i = 0; i < this->rows; i++)
+    {
+        for(size_t j = 0; j < this->cols-1; j++)
+        {
+            val = m[getIdx(i,j)];
+            outFile << val << ',';
+
+        }
+        val = m[getIdx(i,cols-1)];
+        outFile << val << '\n';
+    }
+    outFile.close();
+}
+
 Matrix Matrix::getColumn(size_t col)
 {
     double *arr = new double[rows];
