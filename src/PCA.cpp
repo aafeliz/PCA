@@ -50,9 +50,6 @@ Matrix* PCA::eigen()
         ql(Va, d, e, i);
         eig[1] += makeD(d, e, i);
     }
-    
-    
-    
     eig[0] = Va;
     
     
@@ -211,7 +208,7 @@ void PCA::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
             if(e(row,m) <= eps * tst1) break;
         // if m == l, d(row,l) is an eigen value
         size_t iter = 0;
-        double g, p, r, dl1, h, c ,c2, c3, el1, s, s2;
+        double g, p, r, dl1, h, c ,c2, c3, el1, s, s2, conL, conR;
         if(m > l)
         {
             iter = 0;
@@ -265,7 +262,9 @@ void PCA::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
                 d(row, l) = c*p;
                 
                 // check for convergece
-                if(!(std::abs(e(row, l) > (eps * tst1))))
+                conL = std::abs(e(row, l));
+                conR =eps * tst1;
+                if(!(conL > conR))
                     break;
             }
         }
@@ -274,6 +273,7 @@ void PCA::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
         
     }
     // sort eigen values and corresponding vectors;
+    /*
     double k, p;
     for(size_t i = 0; i < n-1; i++)
     {
@@ -298,6 +298,7 @@ void PCA::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
             }
         }
     }
+     */
 }
 /**@todo: needs to be fixed
  */

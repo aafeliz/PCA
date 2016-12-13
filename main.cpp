@@ -10,7 +10,7 @@ The data to test PCA class comes from PCA hw for CPE::646
  */
 int main()
 {
-    const size_t rows = 2,cols = 8;
+    const size_t rows = 3,cols = 8;
     double in[rows][cols] = {{1, -3, 4, -1, 0, 5, -1, 3}, {2, -1, 5, 1, -2, 2, -4, 1}};
     double in2[rows*cols] = {1, -3, 4, -1, 0, 5, -1, 3, 2, -1, 5, 1, -2, 2, -4, 1};
     double **data;
@@ -76,8 +76,12 @@ int main()
     p.calcStats();
     p.outputStats();
     //Matrix A = lt.getScatter();
-    Matrix *eig = p.eigen();//new Matrix[2];
     Matrix *eig2 = lt.eigen();
+    cout << "Eig[0]:\n" << eig2[0];
+    
+    cout << "\nEig[1]: \n" << eig2[1];
+    Matrix *eig = p.eigen();//new Matrix[2];
+    
     //A.eigen(A, eig[0], eig[1]);
     
     cout << "Eig[0]:\n" << eig[0];
