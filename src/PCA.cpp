@@ -44,12 +44,14 @@ Matrix* PCA::eigen()
     Matrix d(n, n, double(0)), e(n, n, double(0)), Va = A;
     Matrix *eig = new Matrix[2];
     eig[1] = Matrix(n, n, double(0));
-    for(size_t i = 0; i < A.rows; i++)
+    for(size_t i = 0; i < A.rows-1; i++)
     {
         houseHolder(Va, d, e, i);
         ql(Va, d, e, i);
         eig[1] += makeD(d, e, i);
     }
+    std::cout << std::endl;
+    std::cout << e;
     eig[0] = Va;
     
     
@@ -70,6 +72,153 @@ void PCA::eigen(Matrix& V, Matrix& D)
     V = Va;
     
     return;
+}
+
+void PCA::eigenJacobian()
+{
+    eigenVect = Matrix(sMat.cols, sMat.cols, 0.0);
+    eigenVals = Matrix(sMat.cols, sMat.cols, 0.0);
+    size_t jiterations, i, j, k, iq, ip, m_size = sMat.cols, jacobi_max_iterations = 1000;
+    
+    double threshold, theta, tau, t, sm, s, h, g, c,
+    p;
+    double *b, *z;
+    //double b[m_size * sizeof(double)], z[m_size*sizeof(double)];
+    
+    //Matrix b(m_size, m_size), z(m_size, m_size);
+    
+    b = new double[m_size];
+    b--;
+    z = new double[m_size];
+    z--;
+    
+    /* initialize eigenVect and eigen values */
+    for( ip = 1; ip < m_size; ip++ ){
+        for (iq = 1; iq < m_size; iq++){
+            eigenVect(ip,iq) = 0.0;
+        }
+        eigenVect(ip,ip) = 1.0;
+    }
+    for( ip = 1; ip < m_size; ip++ ){
+        b[ip] = eigenVals(ip,ip) = sMat(ip,ip);
+        z[ip] = 0.0;
+    }
+    
+    jiterations = 0;
+    for( i = 0; i <= jacobi_max_iterations; i++ ){
+        sm = 0.0;
+        for( ip = 1; ip < m_size; ip++ ){
+            for( iq = ip + 1; iq < m_size; iq++ ){
+                sm += fabs(sMat(ip,iq));
+            }
+        }
+        
+        if( sm == 0.0 ){
+            /* eigenVals & eigenVect sorting */
+            for( i = 1; i < m_size; i++ ){
+                p = eigenVals(k = i, i);
+                for( j = i + 1; j < m_size; j++ ){
+                    if( eigenVals(j, j) >= p ){
+                        p = eigenVals(j,k = j);
+                    }
+                }
+                if( k != i ){
+                    eigenVals(0,k) = eigenVals(0,i);
+                    eigenVals(0,i) = p;
+                    for( j = 1; j < m_size; j++ ){
+                        p = eigenVect(j, i);
+                        eigenVect(j, i) = eigenVect(j, k);
+                        eigenVect(j, k) = p;
+                    }
+                }
+            }
+            
+            /* restore symmetric sMat's sMat */
+            for( i = 2; i < m_size; i++ ){
+                for( j = 1; j < i; j++ ){
+                    sMat(j,i) = sMat(i,j);
+                }
+            }
+            
+            z++;
+            delete z;
+            b++;
+            delete b;
+            jit =  jiterations;
+            return;
+        }
+        
+        
+        threshold = ( i < 4 ? 0.2 * sm / (m_size * m_size) : 0.0 );
+        for( ip = 1; ip < m_size; ip++ )
+        {
+            for( iq = ip + 1; iq < m_size; iq++ )
+            {
+                g = 100.0 * fabs(sMat(ip,iq));
+                
+                if( i > 4 &&
+                   fabs(eigenVals(ip, ip)) + g == fabs(eigenVals(ip, ip)) &&
+                   fabs(eigenVals(iq, iq)) + g == fabs(eigenVals(iq, iq)) ){
+                    sMat(ip,iq) = 0.0;
+                }
+                else if( fabs(sMat(ip,iq)) > threshold ){
+                    h = eigenVals(iq, iq) - eigenVals(ip, ip);
+                    if( fabs(h) + g == fabs(h) ){
+                        t = sMat(ip,iq) / h;
+                    }
+                    else {
+                        theta = 0.5 * h / sMat(ip,iq);
+                        t     = 1.0 / ( fabs(theta) + sqrt( 1.0 + theta * theta ) );
+                        if( theta < 0.0 ){
+                            t = -t;
+                        }
+                    }
+                    
+                    c                = 1.0 / sqrt(1 + t * t);
+                    s                = t * c;
+                    tau              = s / (1.0 + c);
+                    h                = t * sMat(ip,iq);
+                    z[ip]           -= h;
+                    z[iq]           += h;
+                    eigenVals(ip, ip) -= h;
+                    eigenVals(iq, iq) += h;
+                    sMat(ip, iq)   = 0.0;
+                    
+                
+                    #define M_ROTATE(M,i,j,k,l) g = M(i,j); \
+                    h = M(k,l); \
+                    M(i,j) = g - s * (h + g * tau); \
+                    M(k,l) = h + s * (g - h * tau)
+                    for( j = 1; j < ip; j++ ){
+                        M_ROTATE( sMat, j, ip, j, iq );
+                    }
+                    for( j = ip + 1; j < iq; j++ ){
+                        M_ROTATE( sMat, ip, j, j, iq );
+                    }
+                    for( j = iq + 1; j < m_size; j++ ){
+                        M_ROTATE( sMat, ip, j, iq, j );
+                    }
+                    for( j = 1; j < m_size; j++ ){
+                        M_ROTATE( eigenVect, j, ip, j, iq );
+                    }
+                    
+                    ++jiterations;
+                }
+            }
+        }
+        
+        /*for( ip = 1; ip < m_size; ip++ ){
+         b[ip)          += z[ip);
+         eigenVals[ip) = b[ip);
+         z[ip)           = 0.0;
+         }*/
+    }
+    
+    z++;
+    delete z;
+    b++;
+    delete b;
+    
 }
 
 void PCA::houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
@@ -99,7 +248,7 @@ void PCA::houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
             for(size_t j = 0; j < i; j++)
             {
                 d(row, j) = A(i-1, j);
-                A(i, i) = 0.0;
+                A(i, j) = 0.0;
                 A(j, i) = 0.0;
             }
         }
@@ -203,9 +352,12 @@ void PCA::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
         de += std::abs(e(row,l));
         t = de;
         tst1 = tst1 > t ? tst1 : t;
-        
-        for(m = l; m < n; m++)
+        m = l;
+        while(m < n)
+        {
             if(e(row,m) <= eps * tst1) break;
+            m++;
+        }
         // if m == l, d(row,l) is an eigen value
         size_t iter = 0;
         double g, p, r, dl1, h, c ,c2, c3, el1, s, s2, conL, conR;
@@ -214,7 +366,7 @@ void PCA::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
             iter = 0;
             for(;;)
             {
-                iter++;
+                iter = iter +1;
                 // compute implisit shift;
                 g = d(row, l);
                 p = (d(row, l+1) - g) / (2.0 * e(row, l));
@@ -231,7 +383,9 @@ void PCA::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
                 
                 // implisi QL transformation
                 p = d(row, m);
-                c = c2 = c3 = 1.0;
+                c = 1.0;
+                c2 = c;
+                c3 = c;
                 el1 = e(row, l+1);
                 s = 0.0;
                 s2 = 0.0;
@@ -246,7 +400,7 @@ void PCA::ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
                     e(row, i+1) = s * r;
                     s = e(row, i)/r;
                     c = p / r;
-                    p = c * d(row, i) - (s * g);
+                    p = (c * d(row, i)) - (s * g);
                     d(row, i+1) = h + (s*((c*g) + (s*d(row,i))));
                     
                     // accummulate transformation

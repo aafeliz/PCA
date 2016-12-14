@@ -10,7 +10,7 @@ The data to test PCA class comes from PCA hw for CPE::646
  */
 int main()
 {
-    const size_t rows = 3,cols = 8;
+    const size_t rows = 2,cols = 8;
     double in[rows][cols] = {{1, -3, 4, -1, 0, 5, -1, 3}, {2, -1, 5, 1, -2, 2, -4, 1}};
     double in2[rows*cols] = {1, -3, 4, -1, 0, 5, -1, 3, 2, -1, 5, 1, -2, 2, -4, 1};
     double **data;
@@ -59,34 +59,29 @@ int main()
      
      */
 
-    //Matrix me;
-    //load matrix with csv file
-    //me.readFile("data2.csv");
-    //me.writeFile("matrix.csv");
-    //cout << me;
-    double *arr = new double[9];
-    double input[] = {1, 0, 2, 0, 2, 0, 2, 0, 1};
-    for(size_t i = 0; i < 9; i++)
-    {
-        arr[i] = input[i];
-    }
-    Matrix mData(3, 3, arr);
-    PCA p(mData);
-    p.outputData();
-    p.calcStats();
-    p.outputStats();
-    //Matrix A = lt.getScatter();
-    Matrix *eig2 = lt.eigen();
-    cout << "Eig[0]:\n" << eig2[0];
+   
+    //////////////////////////////////////////////////////
+    //              USING JACOBIAN METHOD               //
+    //////////////////////////////////////////////////////
+    double *arr2 = new double[25];
+    double input2[25] = {1,  7,  3,  7,  4,
+                        -5,  3, -5,  6,  5,
+                         2,  8,  5,  2,  3,
+                         4,  5,  3,  3,  4,
+                         4,  5,  6,  7,  3};
     
-    cout << "\nEig[1]: \n" << eig2[1];
-    Matrix *eig = p.eigen();//new Matrix[2];
+    for(size_t i = 0; i < 25; i++)
+        arr2[i] = input2[i];
     
-    //A.eigen(A, eig[0], eig[1]);
+    Matrix mData2(5, 5, arr2);
+    PCA p2(mData2);
+    p2.outputData();
+    p2.calcStats();
+    p2.outputStats();
+    p2.eigenJacobian();
     
-    cout << "Eig[0]:\n" << eig[0];
-    
-    cout << "\nEig[1]: \n" << eig[1];
+    cout << "\n\nEig VALS:\n" << p2.eigenVals;
+    cout << "\nEig VECS: \n" << p2.eigenVect;
     
     
     

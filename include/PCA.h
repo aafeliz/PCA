@@ -42,8 +42,7 @@ private:
     Matrix mu; // more like a vector so it [numFeatures(rows) x 1(cols)]
     Matrix sMat; // scatter matrix
     Matrix A;
-    Matrix eigenVals; // matrix of eigen values
-    Matrix eigenVect; // matrix of eigen vectors
+    size_t jit;
 
 
     /**@brief
@@ -85,6 +84,10 @@ public:
     Matrix minor(const Matrix& z, const Matrix& k);
     Matrix* eigen();
     void eigen(Matrix& Q, Matrix& R);
+    void eigenJacobian();
+    
+    Matrix eigenVals; // matrix of eigen values
+    Matrix eigenVect; // matrix of eigen vectors
     
     void houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
     void ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
