@@ -112,6 +112,8 @@ public:
     Matrix getRow(size_t row);
     Matrix unitVector(size_t col);
     
+    void appendRow(const Matrix& B);
+    void appendCol(const Matrix& B);
     
     /*
     // as features with input data are being read the vectors get
@@ -142,6 +144,7 @@ public:
 
 };
 namespace Mat {
+    size_t getIdx(const size_t& Rows, const size_t& Cols, const size_t& r, const size_t& c);
     /**@brief: Jacobian eigen decomposition helper function find max value
      * Will retrieve value and location of largest value of top half of matrix
      * Returns drouble array with [maxVal, Row, Col]

@@ -38,10 +38,12 @@ private:
      * @todo: can be done after matrix class is of type template
      */
     Matrix names;//
-
+    Matrix A;
     Matrix mu; // more like a vector so it [numFeatures(rows) x 1(cols)]
     Matrix sMat; // scatter matrix
-    Matrix A;
+    Matrix xi_mu;// all xi-mu
+    Matrix ai; // eigenVec' * (xi-mu)
+    Matrix x_bar; // not mean, these are the new x on the new projection
     size_t jit;
 
 
@@ -82,6 +84,7 @@ public:
     Matrix eigenVals; // matrix of eigen values
     Matrix eigenVect; // matrix of eigen vectors
     void eigenJacobian();
+    void calcPCA();
     
     
     

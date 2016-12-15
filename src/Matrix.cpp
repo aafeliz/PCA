@@ -32,6 +32,10 @@ size_t Matrix::getIdx(size_t r, size_t c) const
 {
     return ((cols*r) + c);
 }
+size_t Mat::getIdx(const size_t& Rows, const size_t& Cols, const size_t& r, const size_t& c)
+{
+    return (Cols * r) + c;
+}
 /**@bug: delete cannot be used when arr-> is pointing at an array that did not use new*/
 Matrix::Matrix(size_t r, size_t c, double *arr)
 {
@@ -572,6 +576,54 @@ Matrix Matrix::getRow(size_t row)
         arr[i] = this->m[getIdx(row, i)];
     }
     return Matrix(1, cols, arr);
+}
+
+void Matrix::appendRow(const Matrix& B)
+{
+    const size_t oldSize = rows * B.cols;
+    const size_t newSize = B.cols + oldSize;
+    
+    double *temp = new double[newSize];
+    for(size_t n = 0; n < newSize; n++)
+    {
+        if(n < oldSize)
+            temp[n] = m[n];
+        else
+            temp[n] = B(0,n-oldSize);
+    }
+    delete[] m;
+    m = temp;
+    rows++;
+    cols = B.cols;
+    
+    
+}
+void Matrix::appendCol(const Matrix& B)
+{
+    const size_t oldCols = cols;
+    cols++;
+    rows = B.rows;
+    const size_t newSize = cols * B.rows;
+    double *temp = new double[newSize];
+    for(size_t r = 0; r < B.rows; r++)
+    {
+        for(size_t c = 0; c < cols; c++)
+        {
+            if(c < oldCols)
+            {
+                temp[getIdx(r, c)] = m[Mat::getIdx(rows, oldCols, r, c)];
+            }
+            else
+            {
+                temp[getIdx(r, c)] = B(r,0);
+            }
+            
+        }
+    }
+    delete[] m;
+    m = temp;
+    
+    
 }
 
 // a to the integer power k

@@ -81,6 +81,20 @@ void PCA::eigenJacobian()
     eigenVect = eigens[1];
 }
 
+void PCA::calcPCA()
+{
+    
+    
+    const Matrix teVect = eigenVect.getColumn(eigenVect.cols-1);// vect col from max eigen value index
+    std::cout << "vect: \n"<< teVect << '\n';
+    std::cout << "xi_mu: \n"<< xi_mu<< '\n';
+    ai = ~teVect * xi_mu;
+    std::cout << "ai: \n" << ai << '\n';
+    x_bar = mu + (ai * teVect);
+    std::cout << "xi_bar: \n" << x_bar << '\n';
+    //1.060	-3.889 5.303	-1.060	-2.474	3.889	-4.596	1.767
+}
+
 void PCA::calcEigen()
 {
     eigenJacobian();
@@ -442,7 +456,9 @@ void PCA::calcMeans()///O(numFeatures*numInputsPerFeature)
 
 void PCA::calcScatterMatrix()
 {
+    
     Matrix scatterMat(mu.rows, mu.rows, 0.0);
+    xi_mu = Matrix(0, 0, 0.0);
     //Matrix xi;
     //Matrix xi_mu;
     for(size_t c = 0; c < featuresData.cols; c++)
@@ -451,51 +467,34 @@ void PCA::calcScatterMatrix()
         const Matrix xi = featuresData.getColumn(c);
         //xi = featuresData.getColumn(c);
         //xi_mu = xi - mu;
-        const Matrix xi_mu = xi - mu;
+        const Matrix txi_mu = xi - mu;
+        xi_mu.appendCol(txi_mu);
+        //std::cout << "txi_mu " << c << ":\n" << txi_mu;
+        //std::cout << "xi_mu " << c << ":\n" << xi_mu;
         // calc sum((xi-mu) * (xi-mu))
-        Matrix xi_mu2 = xi_mu * ~(xi_mu);
+        Matrix xi_mu2 = txi_mu * ~(txi_mu);
         scatterMat += xi_mu2;
     }
     /*
-    // calc all xi-mu
-    vector<vector<double>> x_mus; // all x-mu for all features
-    vector<double> featDif; // all x-mu for individual features
-    difs.clear();
-    int featNum = 0;
-    for(auto feature : this->featuresData)
+    Matrix scatterMat(mu.rows, mu.rows, 0.0);
+    //Matrix xi;
+    xi_mu = Matrix(0,0,0.0);
+    
+    for(size_t r = 0; r < featuresData.rows; r++)
     {
-
-        featDif.clear();
-        for(auto input : feature.data)
-        {
-            double x_mu = input - mu[i];
-            featDif.push_back(x_mu);
-        }
-        x_mus.push_back(featDif);
+        // calc all xi - mu
+        const Matrix xi = featuresData.getRow(r);
+        //xi = featuresData.getColumn(c);
+        //xi_mu = xi - mu;
+        const Matrix txi_mu = xi - mu;
+        xi_mu.appendRow(txi_mu);
+        std::cout << "xi_mu " << r << ":\n" << xi_mu;
+        
+        // calc sum((xi-mu) * (xi-mu))
+        Matrix xi_mu2 = txi_mu * ~(txi_mu);
+        scatterMat += xi_mu2;
     }
-
-    // Calc each (xi-mu)*(xi-mu)'
-    vector<vector<double>> scatterMat;
-    scatterMat.clear();
-    for(int i = 0; i < this->featuresData.data.size(); i++)
-    {
-
-
-
-        // gather all one input for all features
-        vector<double> inputN;
-        inputN.clear();
-        int input = 0;
-        for (auto feature : x_mus) {
-            double sample = feature[input];
-            input++;
-            inputN.push(back);
-        }
-        // get variance for that input
-        vector<vector<double>> cScatterMat = vectorMultItTranspose(inputN);
-        add2total(scatterMat, cScatterMat);
-    }
-     */
+    */
     this->sMat = scatterMat;
 }
 void PCA::calcStats()
