@@ -77,27 +77,15 @@ public:
      */
     PCA(PCA&&);
     
-    /**@todo:
-     */
-    // diganoal everything else zero
-    Matrix eye(const Matrix& orig);
-    Matrix minor(const Matrix& z, const Matrix& k);
-    Matrix* eigen();
-    void eigen(Matrix& Q, Matrix& R);
-    void eigenJacobian();
+    
     
     Matrix eigenVals; // matrix of eigen values
     Matrix eigenVect; // matrix of eigen vectors
-    
-    void houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
-    void ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
-    Matrix makeD(const Matrix& d, const Matrix& e, const size_t& r);
+    void eigenJacobian();
     
     
-    // will return array as [Q, R]
-    Matrix* qrDecomp(const Matrix& A);
-    // will change Q and R passed in
-    void qrDecomp(const Matrix& A, Matrix& Q, Matrix& R);
+    
+    
     
     
     /**@brief
@@ -122,8 +110,31 @@ public:
     
     void outputStats();
     
+    void calcEigen();
+    
+    void outputEigen();
+    
+    void outputEigVect();
+    
+    void outputEigVals();
+    
     Matrix getScatter();
-
+    ///////////////////////////// Things for the future///////////////////
+    /**@todo:
+     */
+    // diganoal everything else zero
+    Matrix eye(const Matrix& orig);
+    Matrix minor(const Matrix& z, const Matrix& k);
+    Matrix* eigenHH();
+    void eigenHH(Matrix& Q, Matrix& R);
+    
+    // will return array as [Q, R]
+    Matrix* qrDecomp(const Matrix& A);
+    // will change Q and R passed in
+    void qrDecomp(const Matrix& A, Matrix& Q, Matrix& R);
+    void houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
+    void ql(Matrix& A, Matrix& d, Matrix& e, const size_t& row);
+    Matrix makeD(const Matrix& d, const Matrix& e, const size_t& r);
 
 };
 #endif //PCA_PCA_H

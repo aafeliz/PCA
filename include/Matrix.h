@@ -23,6 +23,7 @@
 #include <string>
 
 
+
 /**@todo: switch everything to template type to make class general to data type.
                 Matrix operator T(const Matrix&);
                 Matrix operator T(Matrix&);
@@ -31,7 +32,9 @@
  *        switch size type to size_t instead of int
  *
  */
-class Matrix {
+
+class Matrix
+{
 private:
     double* m;
     size_t getIdx(size_t r, size_t c);
@@ -60,7 +63,9 @@ public:
     Matrix(const Matrix&);
     Matrix(Matrix&& );
     Matrix& operator =(const Matrix&);
-    // retrieve individual matrix values from array requested in matrix from
+    /**@brief: retrieve individual matrix values from array requested in matrix from
+        a double
+     */
     double& operator ()(size_t r, size_t c);
     double& operator ()(size_t r, size_t c) const;
     //double& operator[]( size_t, size_t);
@@ -88,6 +93,12 @@ public:
     Matrix operator -=(const Matrix&);
     
     
+    //double* thMaxElement();
+    
+    
+    
+    Matrix* jacobian_eig();
+   
     
     // will return matrix to qrDecomp
     //Matrix houseHolder(const Matrix& A);
@@ -100,6 +111,7 @@ public:
     Matrix getColumn(size_t col);
     Matrix getRow(size_t row);
     Matrix unitVector(size_t col);
+    
     
     /*
     // as features with input data are being read the vectors get
@@ -129,4 +141,14 @@ public:
     inline void setCols(size_t);
 
 };
+namespace Mat {
+    /**@brief: Jacobian eigen decomposition helper function find max value
+     * Will retrieve value and location of largest value of top half of matrix
+     * Returns drouble array with [maxVal, Row, Col]
+     */
+    double* thMaxElement(const Matrix& A);
+    Matrix* jacobian_eig(const Matrix& A);
+    /**@brief: Jacobian eigen decomp helper function to rotate matrix*/
+    void mRotate(Matrix& A, Matrix& T, const u_int32_t& R, const u_int32_t& C);
+}
 #endif //PCA_MATRIX_H

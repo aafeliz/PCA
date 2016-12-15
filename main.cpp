@@ -58,7 +58,11 @@ int main()
      37 54
      
      */
-
+    cout << "//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD LT             //\n//////////////////////////////////////////////////////\n" ;
+    lt.calcEigen();
+    lt.outputEigen();
+    
+    cout << "//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD P2            //\n//////////////////////////////////////////////////////\n" ;
    
     //////////////////////////////////////////////////////
     //              USING JACOBIAN METHOD               //
@@ -78,10 +82,8 @@ int main()
     p2.outputData();
     p2.calcStats();
     p2.outputStats();
-    p2.eigenJacobian();
-    
-    cout << "\n\nEig VALS:\n" << p2.eigenVals;
-    cout << "\nEig VECS: \n" << p2.eigenVect;
+    p2.calcEigen();
+    p2.outputEigen();
     
     
     

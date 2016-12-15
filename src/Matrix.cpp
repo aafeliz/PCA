@@ -320,6 +320,174 @@ Matrix Matrix::operator -=(const Matrix& b)
 ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 
+/*
+ *  IMPORTANT CHECKS:
+     - maxElement function
+        + the for loop size might just be n
+     - rotate
+        + before the cases check order of ops in A(R, R) being set
+ 
+ */
+/**@brief: Jacobian eigen decomposition helper function find max value
+        * Will retrieve value and location of largest value of top half of matrix
+        * Returns drouble array with [maxVal, Row, Col]
+ */
+double* Mat::thMaxElement(const Matrix& A)
+{
+    double *all = new double[3];
+    const size_t n = A.cols;
+    for(size_t r = 0; r < n-1; r++)
+    {
+        for(size_t c = r+1; c < n; c++)
+        {
+            if(std::abs(A(r, c)) >= all[0])
+            {
+                all[0] = std::abs(A(r,c));
+                all[1] = r;
+                all[2] = c;
+            }
+        }
+    }
+    return all;
+}
+
+void Mat::mRotate(Matrix& A, Matrix& p, const u_int32_t& R, const u_int32_t& C)
+{
+    const size_t n = A.cols;
+    double aDiff, t, phi, c, s, tau, temp;
+    aDiff = A(C, C) - A(R, R);
+    if(std::abs(A(R, C)) < std::abs(aDiff))
+        t = A(R, C)/aDiff;
+    else
+    {
+        phi = aDiff / (2.0* A(R, C));
+        t = 1.0 / (std::abs(phi) + sqrt((phi*phi) +1));
+        if(phi < 0.0)
+            t = -t;
+    }
+    c = 1.0 / sqrt((t * t) + 1.0);
+    s = t * c;
+    tau = s / (1.0 + c);
+    temp = A(R, C);
+    A(R, C) = 0.0;
+    A(R, R) = A(R, R) - (t * temp);
+    A(C, C) = A(C, C) + (t * temp);
+    
+    /// Case of i < R
+    for(size_t i = 0; i < R; i++)
+    {
+        temp = A(i, R);
+        A(i, R) = temp - (s * (A(i, C) + (tau * temp)));
+        A(i, C) = A(i, C) + (s * (temp - (tau * A(i, C))));
+    }
+    /// Case of k < i < l
+    for(size_t i = R + 1; i < C; i++)
+    {
+        temp = A(R, i);
+        A(R, i) = temp - (s * (A(i, C) + (tau * A(i, C))));
+        A(i, C) = A(i, C) + (s * (temp - (tau * A(i, C))));
+    }
+    /// Case of i > l
+    for(size_t i = C + 1; i < n; i++)
+    {
+        temp = A(R, i);
+        A(R, i) = temp - (s * (A(C, i) + (tau * temp)));
+        A(C, i) = A(C, i) + (s * (temp - (tau * A(C, i))));
+    }
+    /// Update trans matrix
+    for(size_t i = 0; i < n; i++)
+    {
+        temp = p(i, R);
+        p(i, R) = temp - (s * (p(i, C) + (tau * p(i, R))));
+        p(i, C) = p(i, C) + (s * (temp - (tau * p(i, C))));
+    }
+}
+
+Matrix* Matrix::jacobian_eig()
+{
+    try
+    {
+        Matrix cpA(rows, cols, m);
+        const size_t n = cols;
+        // set number of rotations
+        const size_t maxNrot = 5 * n * n;
+        // init the transformation matrix
+        Matrix p(n, n);
+        for(int i = 0, j = 0; i < n; i++, j++)
+            p(i,j) = 1;
+        // jacobi rotation loop
+        double *aMax;
+        for(size_t i = 0; i < maxNrot; i++)
+        {
+            aMax = Mat::thMaxElement(cpA);
+            if(aMax[0] < 1.0e-10)
+            {
+                // diagnal from A that is to be eigen values
+                Matrix aVals(1,n);
+                for(size_t j = 0; j < n; j++)
+                    aVals(0,j) = cpA(j, j);
+                // vector will be p
+                Matrix aVect(p);
+                Matrix* all = new Matrix[2];
+                all[0] = aVals;
+                all[1] = aVect;
+                return all;
+            }
+            Mat::mRotate(cpA, p, u_int32_t(aMax[1]), u_int32_t(aMax[2]));
+        }
+        std::string e = "no converge";
+        throw(e);
+    }
+    catch(std::string error)
+    {
+        std::cout << error << '\n';
+        return nullptr;
+    }
+}
+
+Matrix* Mat::jacobian_eig(const Matrix& A)
+{
+    try
+    {
+        Matrix cpA(A);
+        const size_t n = A.cols;
+        // set number of rotations
+        const size_t maxNrot = 5 * n * n;
+        // init the transformation matrix
+        Matrix p(n, n);
+        for(int i = 0, j = 0; i < n; i++, j++)
+            p(i,j) = 1;
+        // jacobi rotation loop
+        double *aMax;
+        for(size_t i = 0; i < maxNrot; i++)
+        {
+            aMax = Mat::thMaxElement(cpA);
+            if(aMax[0] < 1.0e-10)
+            {
+                // diagnal from A that is to be eigen values
+                Matrix aVals(1,n);
+                for(size_t j = 0; j < n; j++)
+                    aVals(0,j) = cpA(j, j);
+                // vector will be p
+                Matrix aVect(p);
+                Matrix* all = new Matrix[2];
+                all[0] = aVals;
+                all[1] = aVect;
+                return all;
+            }
+            Mat::mRotate(cpA, p, u_int32_t(aMax[1]), u_int32_t(aMax[2]));
+        }
+        std::string e = "no converge";
+        throw(e);
+    }
+    catch(std::string error)
+    {
+        std::cout << error << '\n';
+        return nullptr;
+    }
+}
+
+
 
 //read CSV file into matrix object
 void Matrix::readFile(std::string filename)

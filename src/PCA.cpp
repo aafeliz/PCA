@@ -35,7 +35,7 @@ PCA::PCA(const Matrix& featuresData)
 
 
 // will return array as [Q, R]
-Matrix* PCA::eigen()
+Matrix* PCA::eigenHH()
 {
     A = sMat;
     const size_t n = A.cols;
@@ -58,7 +58,7 @@ Matrix* PCA::eigen()
     return eig;
 }
 // will change Q and R passed in
-void PCA::eigen(Matrix& V, Matrix& D)
+void PCA::eigenHH(Matrix& V, Matrix& D)
 {
     A = sMat;
     const size_t n = A.cols;
@@ -76,151 +76,35 @@ void PCA::eigen(Matrix& V, Matrix& D)
 
 void PCA::eigenJacobian()
 {
-    eigenVect = Matrix(sMat.cols, sMat.cols, 0.0);
-    eigenVals = Matrix(sMat.cols, sMat.cols, 0.0);
-    size_t jiterations, i, j, k, iq, ip, m_size = sMat.cols, jacobi_max_iterations = 1000;
-    
-    double threshold, theta, tau, t, sm, s, h, g, c,
-    p;
-    double *b, *z;
-    //double b[m_size * sizeof(double)], z[m_size*sizeof(double)];
-    
-    //Matrix b(m_size, m_size), z(m_size, m_size);
-    
-    b = new double[m_size];
-    b--;
-    z = new double[m_size];
-    z--;
-    
-    /* initialize eigenVect and eigen values */
-    for( ip = 1; ip < m_size; ip++ ){
-        for (iq = 1; iq < m_size; iq++){
-            eigenVect(ip,iq) = 0.0;
-        }
-        eigenVect(ip,ip) = 1.0;
-    }
-    for( ip = 1; ip < m_size; ip++ ){
-        b[ip] = eigenVals(ip,ip) = sMat(ip,ip);
-        z[ip] = 0.0;
-    }
-    
-    jiterations = 0;
-    for( i = 0; i <= jacobi_max_iterations; i++ ){
-        sm = 0.0;
-        for( ip = 1; ip < m_size; ip++ ){
-            for( iq = ip + 1; iq < m_size; iq++ ){
-                sm += fabs(sMat(ip,iq));
-            }
-        }
-        
-        if( sm == 0.0 ){
-            /* eigenVals & eigenVect sorting */
-            for( i = 1; i < m_size; i++ ){
-                p = eigenVals(k = i, i);
-                for( j = i + 1; j < m_size; j++ ){
-                    if( eigenVals(j, j) >= p ){
-                        p = eigenVals(j,k = j);
-                    }
-                }
-                if( k != i ){
-                    eigenVals(0,k) = eigenVals(0,i);
-                    eigenVals(0,i) = p;
-                    for( j = 1; j < m_size; j++ ){
-                        p = eigenVect(j, i);
-                        eigenVect(j, i) = eigenVect(j, k);
-                        eigenVect(j, k) = p;
-                    }
-                }
-            }
-            
-            /* restore symmetric sMat's sMat */
-            for( i = 2; i < m_size; i++ ){
-                for( j = 1; j < i; j++ ){
-                    sMat(j,i) = sMat(i,j);
-                }
-            }
-            
-            z++;
-            delete z;
-            b++;
-            delete b;
-            jit =  jiterations;
-            return;
-        }
-        
-        
-        threshold = ( i < 4 ? 0.2 * sm / (m_size * m_size) : 0.0 );
-        for( ip = 1; ip < m_size; ip++ )
-        {
-            for( iq = ip + 1; iq < m_size; iq++ )
-            {
-                g = 100.0 * fabs(sMat(ip,iq));
-                
-                if( i > 4 &&
-                   fabs(eigenVals(ip, ip)) + g == fabs(eigenVals(ip, ip)) &&
-                   fabs(eigenVals(iq, iq)) + g == fabs(eigenVals(iq, iq)) ){
-                    sMat(ip,iq) = 0.0;
-                }
-                else if( fabs(sMat(ip,iq)) > threshold ){
-                    h = eigenVals(iq, iq) - eigenVals(ip, ip);
-                    if( fabs(h) + g == fabs(h) ){
-                        t = sMat(ip,iq) / h;
-                    }
-                    else {
-                        theta = 0.5 * h / sMat(ip,iq);
-                        t     = 1.0 / ( fabs(theta) + sqrt( 1.0 + theta * theta ) );
-                        if( theta < 0.0 ){
-                            t = -t;
-                        }
-                    }
-                    
-                    c                = 1.0 / sqrt(1 + t * t);
-                    s                = t * c;
-                    tau              = s / (1.0 + c);
-                    h                = t * sMat(ip,iq);
-                    z[ip]           -= h;
-                    z[iq]           += h;
-                    eigenVals(ip, ip) -= h;
-                    eigenVals(iq, iq) += h;
-                    sMat(ip, iq)   = 0.0;
-                    
-                
-                    #define M_ROTATE(M,i,j,k,l) g = M(i,j); \
-                    h = M(k,l); \
-                    M(i,j) = g - s * (h + g * tau); \
-                    M(k,l) = h + s * (g - h * tau)
-                    for( j = 1; j < ip; j++ ){
-                        M_ROTATE( sMat, j, ip, j, iq );
-                    }
-                    for( j = ip + 1; j < iq; j++ ){
-                        M_ROTATE( sMat, ip, j, j, iq );
-                    }
-                    for( j = iq + 1; j < m_size; j++ ){
-                        M_ROTATE( sMat, ip, j, iq, j );
-                    }
-                    for( j = 1; j < m_size; j++ ){
-                        M_ROTATE( eigenVect, j, ip, j, iq );
-                    }
-                    
-                    ++jiterations;
-                }
-            }
-        }
-        
-        /*for( ip = 1; ip < m_size; ip++ ){
-         b[ip)          += z[ip);
-         eigenVals[ip) = b[ip);
-         z[ip)           = 0.0;
-         }*/
-    }
-    
-    z++;
-    delete z;
-    b++;
-    delete b;
+    Matrix *eigens = Mat::jacobian_eig(sMat);
+    eigenVals = eigens[0];
+    eigenVect = eigens[1];
+}
+
+void PCA::calcEigen()
+{
+    eigenJacobian();
+}
+
+void PCA::outputEigen()
+{
+    outputEigVals();
+    outputEigVect();
+}
+
+void PCA::outputEigVect()
+{
+    std::cout << "Eigen Vectors:\n" << eigenVect;
     
 }
 
+void PCA::outputEigVals()
+{
+    std::cout << "Eigen Values:\n" << eigenVals;
+}
+/*
+ * NOT WORKING !!!!!
+ */
 void PCA::houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
 {
     // Credit written in GO:https://github.com/skelterjohn/go.matrix/blob/go1/dense_eigen.go
