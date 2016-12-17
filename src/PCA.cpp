@@ -84,15 +84,40 @@ void PCA::eigenJacobian()
 void PCA::calcPCA()
 {
     
+    for(size_t r = 0; r < xi_mu.rows; r++)
+    {
+        const Matrix teVect = eigenVect.getColumn(r);//(eigenVect.cols-1);// vect col from max eigen value index
+        std::cout << "vect: \n"<< ~teVect << '\n';
+        
+        const Matrix fromXi_mu = xi_mu.getRow(r);
+        std::cout << "fromXi_mu\n" << fromXi_mu << '\n';
+        const Matrix results = teVect*fromXi_mu;
+        
+        
+        std::cout << "results\n" << results << '\n';
+        
+        /*
+        std::cout << "xi_mu: \n"<< xi_mu<< '\n';
+        
+        
+        
+        
+        
+        ai = ~teVect * xi_mu;
+        //1.060	-3.889 5.303	-1.060	-2.474	3.889	-4.596	1.767
+        std::cout << "ai: \n" << ai << '\n';
+        Matrix aiVect = (teVect * ai);
+        aiVect += mu;
+        std::cout << "aiVect\n" << aiVect << '\n';
+        x_bar = mu + (ai * teVect);
+        
+        
+        //1.7500   -1.7500    4.7500    0.2500   -0.7500    3.7500   -2.2500    2.2500
+        //1.2500   -2.2500    4.2500   -0.2500   -1.2500    3.2500   -2.7500    1.7500
+        std::cout << "xi_bar: \n" << x_bar << '\n';
+         */
+    }
     
-    const Matrix teVect = eigenVect.getColumn(eigenVect.cols-1);// vect col from max eigen value index
-    std::cout << "vect: \n"<< teVect << '\n';
-    std::cout << "xi_mu: \n"<< xi_mu<< '\n';
-    ai = ~teVect * xi_mu;
-    std::cout << "ai: \n" << ai << '\n';
-    x_bar = mu + (ai * teVect);
-    std::cout << "xi_bar: \n" << x_bar << '\n';
-    //1.060	-3.889 5.303	-1.060	-2.474	3.889	-4.596	1.767
 }
 
 void PCA::calcEigen()
