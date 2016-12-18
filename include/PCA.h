@@ -127,7 +127,7 @@ public:
      */
     // diganoal everything else zero
     Matrix eye(const Matrix& orig);
-    Matrix minor(const Matrix& z, const Matrix& k);
+    //Matrix minor(const Matrix& z, const Matrix& k);
     Matrix* eigenHH();
     void eigenHH(Matrix& Q, Matrix& R);
     

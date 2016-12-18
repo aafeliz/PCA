@@ -86,7 +86,16 @@ int main()
     p2.calcEigen();
     p2.outputEigen();
     
-    
+    cout << "\nElvin\n\n";
+    Matrix elvin;
+    elvin.readFile("dataelv.csv");
+    PCA elv(elvin);
+    elv.outputData();
+    elv.calcStats();
+    elv.outputStats();
+    elv.calcEigen();
+    elv.outputEigen();
+    cout << '\n' << elvin;
     
     return 0;
 }
