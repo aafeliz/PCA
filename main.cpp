@@ -10,6 +10,7 @@ The data to test PCA class comes from PCA hw for CPE::646
  */
 int main()
 {
+    
     const size_t rows = 2,cols = 8;
     double in[rows][cols] = {{1, -3, 4, -1, 0, 5, -1, 3}, {2, -1, 5, 1, -2, 2, -4, 1}};
     double in2[rows*cols] = {1, -3, 4, -1, 0, 5, -1, 3, 2, -1, 5, 1, -2, 2, -4, 1};
@@ -35,6 +36,7 @@ int main()
         data2[i] = in2[i];
     }
     
+    
     Matrix m(rows, cols, data);
     Matrix m2(rows, cols, data2);
     
@@ -43,7 +45,7 @@ int main()
 
     PCA lt(m);
     PCA lt2(m2);
-    
+    cout << "\n\n//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD LT             //\n//////////////////////////////////////////////////////\n" ;
     lt.outputData();
     lt2.outputData();
     lt.calcStats();
@@ -58,16 +60,17 @@ int main()
      37 54
      
      */
-    cout << "//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD LT             //\n//////////////////////////////////////////////////////\n" ;
+    
     lt.calcEigen();
     lt.outputEigen();
     lt.calcPCA();
+    lt.outputPCA();
+    //1.7500   -1.7500    4.7500    0.2500   -0.7500    3.7500   -2.2500    2.2500
+    //1.2500   -2.2500    4.2500   -0.2500   -1.2500    3.2500   -2.7500    1.7500
     
-    cout << "//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD P2            //\n//////////////////////////////////////////////////////\n" ;
+    cout << "\n\n//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD P2            //\n//////////////////////////////////////////////////////\n" ;
    
-    //////////////////////////////////////////////////////
-    //              USING JACOBIAN METHOD               //
-    //////////////////////////////////////////////////////
+   
     double *arr2 = new double[25];
     double input2[25] = {1,  7,  3,  7,  4,
                         -5,  3, -5,  6,  5,
@@ -80,12 +83,17 @@ int main()
     
     Matrix mData2(5, 5, arr2);
     PCA p2(mData2);
-    p2.outputData();
-    p2.calcStats();
-    p2.outputStats();
-    p2.calcEigen();
-    p2.outputEigen();
+    p2.calcALL();
+    p2.outputALL();
+    //p2.outputData();
+    //p2.calcStats();
+    //p2.outputStats();
+    //p2.calcEigen();
+    //p2.outputEigen();
+    //p2.calcPCA();
+    //p2.outputPCA();
     
+    cout << "\n\n//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD Elvin         //\n//////////////////////////////////////////////////////\n" ;
     cout << "\nElvin\n\n";
     Matrix elvin;
     elvin.readFile("dataelv.csv");
@@ -95,7 +103,12 @@ int main()
     elv.outputStats();
     elv.calcEigen();
     elv.outputEigen();
+    elv.calcPCA();
+    elv.outputPCA();
+    
     cout << '\n' << elvin;
+    
+    
     
     return 0;
 }

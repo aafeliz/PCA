@@ -85,10 +85,14 @@ public:
     friend Matrix operator +(const Matrix&, const Matrix&);
     friend Matrix operator -(const Matrix&, const Matrix&);
     friend Matrix operator *(const Matrix&, const Matrix&);
+    // scalar gain on a matrix
+    friend Matrix operator *(const double& a, const Matrix& b);
 
 
     // add another matrix to this one, changing this
     Matrix operator +=(const Matrix&);
+    // scalar and matrix addition
+    Matrix operator +=(const double& b);
     // subtract another matrix from this one, changing this
     Matrix operator -=(const Matrix&);
     
@@ -144,6 +148,7 @@ public:
 
 };
 namespace Mat {
+    size_t getMaxIdx(const Matrix&);
     size_t getIdx(const size_t& Rows, const size_t& Cols, const size_t& r, const size_t& c);
     /**@brief: Jacobian eigen decomposition helper function find max value
      * Will retrieve value and location of largest value of top half of matrix

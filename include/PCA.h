@@ -84,7 +84,7 @@ public:
     Matrix eigenVals; // matrix of eigen values
     Matrix eigenVect; // matrix of eigen vectors
     void eigenJacobian();
-    void calcPCA();
+    
     
     
     
@@ -99,11 +99,19 @@ public:
     void passFeaturesData(int numFeatures, ...); // expecting arguments of type FeatureData
    // void passFeaturesData(vector<FeatureData> features);
     void passFeaturesData(Matrix features);
+    
+    void calcALL();
+    
+    void calcPCA();
+    
+    void calcEigen();
+    
     /*
      * calculate means and scatter matrix
      */
-    
     void calcStats();
+    
+    void outputALL();
     
     void outputData();
     
@@ -113,13 +121,17 @@ public:
     
     void outputStats();
     
-    void calcEigen();
-    
     void outputEigen();
     
     void outputEigVect();
     
     void outputEigVals();
+    
+    void outputPCA();
+    
+    void outputAi();
+    
+    void outputX_bar();// not mean!
     
     Matrix getScatter();
     ///////////////////////////// Things for the future///////////////////

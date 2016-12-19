@@ -80,28 +80,37 @@ void PCA::eigenJacobian()
     eigenVals = eigens[0];
     eigenVect = eigens[1];
 }
-
+void PCA::calcALL()
+{
+    calcStats();
+    calcEigen();
+    calcPCA();
+}
 void PCA::calcPCA()
 {
     
-    for(size_t r = 0; r < xi_mu.rows; r++)
+    //std::cout << "Xi_mu\n" << xi_mu << '\n';
+    const size_t MAX = Mat::getMaxIdx(eigenVals);
+    const Matrix maxVec = eigenVect.getColumn(MAX);
+    //std::cout << "maxVec\n" << maxVec << '\n';
+    ai = ~maxVec * xi_mu;
+    const Matrix teVect = eigenVect.getColumn(MAX);
+    //std::cout << "ai\n" << ai << '\n';
+    double aii;
+    Matrix x_bari;
+    for(size_t c = 0; c < ai.cols; c++)
     {
-        const Matrix teVect = eigenVect.getColumn(r);//(eigenVect.cols-1);// vect col from max eigen value index
-        std::cout << "vect: \n"<< ~teVect << '\n';
-        
-        const Matrix fromXi_mu = xi_mu.getRow(r);
-        std::cout << "fromXi_mu\n" << fromXi_mu << '\n';
-        const Matrix results = teVect*fromXi_mu;
-        
-        
-        std::cout << "results\n" << results << '\n';
-        
-        /*
-        std::cout << "xi_mu: \n"<< xi_mu<< '\n';
-        
-        
-        
-        
+        aii = ai(0,c);
+        //std::cout << "aiii :\n" << aii << '\n';
+        x_bari = mu + (aii * maxVec);
+        x_bar.appendCol(x_bari);
+        //std::cout << "x_bar :\n" << x_bar << '\n';
+    }
+    
+    
+    
+    
+    /*
         
         ai = ~teVect * xi_mu;
         //1.060	-3.889 5.303	-1.060	-2.474	3.889	-4.596	1.767
@@ -116,7 +125,6 @@ void PCA::calcPCA()
         //1.2500   -2.2500    4.2500   -0.2500   -1.2500    3.2500   -2.7500    1.7500
         std::cout << "xi_bar: \n" << x_bar << '\n';
          */
-    }
     
 }
 
@@ -124,10 +132,17 @@ void PCA::calcEigen()
 {
     eigenJacobian();
 }
-
+void PCA::outputALL()
+{
+    outputData();
+    outputStats();
+    outputEigen();
+    outputPCA();
+}
 void PCA::outputEigen()
 {
     outputEigVals();
+    std::cout << '\n';
     outputEigVect();
 }
 
@@ -140,6 +155,20 @@ void PCA::outputEigVect()
 void PCA::outputEigVals()
 {
     std::cout << "Eigen Values:\n" << eigenVals;
+}
+void PCA::outputAi()
+{
+    std::cout << "Ai's Values:\n" << ai;
+}
+void PCA::outputX_bar()
+{
+    std::cout << "Xi_bar Values:\n" << x_bar;
+}
+void PCA::outputPCA()
+{
+    outputAi();
+    std::cout << '\n';
+    outputX_bar();
 }
 /*
  * NOT WORKING !!!!!
@@ -526,7 +555,6 @@ void PCA::calcStats()
 {
     calcMeans();
     calcScatterMatrix();
-    
 }
 
 void PCA::outputData()

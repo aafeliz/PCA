@@ -300,6 +300,26 @@ Matrix operator *(const Matrix& a, const Matrix& b)
     // no need to delete arr since it becomes nullptr once Matrix is created
     return Matrix(a.rows, b.cols, arr);
 }
+/**@brief: scalar to matrix multiplication
+ 
+ */
+Matrix operator *(const double& a, const Matrix& b)
+{
+    double *arr = new double[b.rows * b.cols];
+    for(size_t i = 0; i< (b.rows * b.cols); i++)
+    {
+        arr[i] = 0;
+    }
+    for(size_t r = 0; r < b.rows; r++)
+    {
+        for(size_t c = 0; c < b.cols; c++)
+        {
+            arr[b.getIdx(r, c)] = a * b(r, c);
+        }
+    }
+    // no need to delete arr since it becomes nullptr once Matrix is created
+    return Matrix(b.rows, b.cols, arr);
+}
 
 
 // add another matrix to this one, changing this
@@ -311,6 +331,17 @@ Matrix Matrix::operator +=(const Matrix& b)
     }
     return *this;
 }
+
+// add another matrix to this one, changing this
+Matrix Matrix::operator +=(const double& b)
+{
+    for(size_t i = 0; i < (this->cols * this->rows); i++)
+    {
+        this->m[i] += b;
+    }
+    return *this;
+}
+
 // subtract another matrix from this one, changing this
 Matrix Matrix::operator -=(const Matrix& b)
 {
@@ -490,7 +521,21 @@ Matrix* Mat::jacobian_eig(const Matrix& A)
         return nullptr;
     }
 }
-
+size_t Mat::getMaxIdx(const Matrix &A)
+{
+    size_t maxIdx = 0;//A(0,0);
+    double maxVal = A(0,0);
+    for(int i = 0; i < A.cols; i++)
+    {
+        if(A(0, i) > maxVal)
+        {
+            maxVal = A(0, i);
+            maxIdx = i;
+        }
+        
+    }
+    return maxIdx;
+}
 
 
 //read CSV file into matrix object
