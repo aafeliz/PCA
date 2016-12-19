@@ -81,12 +81,13 @@ int main()
     for(size_t i = 0; i < 25; i++)
         arr2[i] = input2[i];
     
-    //Matrix mData2(5, 5, arr2);
-    Matrix mData2;
-    mData2.readFile("dataelv");
+    Matrix mData2(5, 5, arr2);
+    //Matrix mData2;
+    //mData2.readFile("dataelv");
     PCA p2(mData2);
     p2.calcALL();
     p2.outputALL();
+    p2.getX_bar().writeFile("results.csv");
     //p2.outputData();
     //p2.calcStats();
     //p2.outputStats();
