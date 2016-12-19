@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream>
+#include <cassert>
 
 /*
  * @todo: @bug redefinition issue with header when using it with : rows(rows)...
@@ -544,10 +545,10 @@ void Matrix::readFile(std::string filename)
     std::vector<double> input;
 	std::fstream inFile;
 	std::string line;
-
+    //assert(inFile.is_open() != false && "file did not open assert\n") ;
 	inFile.open(filename);
     try {
-        if(!inFile.is_open()) throw std::string("file did not open\n");
+        if(inFile.is_open()) throw std::string("file did not open\n");
         
     }
     catch(std::string msg)
@@ -681,12 +682,14 @@ void Matrix::appendCol(const Matrix& B)
 std::ostream& operator<<(std::ostream& s, const Matrix& m)
 {
     double val;
+    s.precision(4);
+    //s << std::setprecision(4);
     for(size_t i = 0; i < m.rows; i++)
     {
         for(size_t j = 0; j < m.cols; j++)
         {
             val = m(i, j);
-            s << val << ',';
+            s << std::setw(12) << val << ',';
         }
         s << '\n';
     }

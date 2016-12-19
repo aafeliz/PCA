@@ -581,4 +581,24 @@ Matrix PCA::getScatter()
 {
     return Matrix(this->sMat);
 }
+Matrix PCA::getEigVectors()
+{
+    return Matrix(this->eigenVect);
+}
+Matrix PCA::getEigValues()
+{
+    return Matrix(this->eigenVals);
+}
+Matrix PCA::getAi()
+{
+    return Matrix(this->ai);
+}
+Matrix PCA::getX_bar()
+{
+    return Matrix(this->x_bar);
+}
+Matrix PCA::getOrig()
+{
+    return Matrix(this->featuresData);
+}
 PCA::~PCA() {};

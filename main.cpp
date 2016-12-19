@@ -81,7 +81,9 @@ int main()
     for(size_t i = 0; i < 25; i++)
         arr2[i] = input2[i];
     
-    Matrix mData2(5, 5, arr2);
+    //Matrix mData2(5, 5, arr2);
+    Matrix mData2;
+    mData2.readFile("dataelv");
     PCA p2(mData2);
     p2.calcALL();
     p2.outputALL();
@@ -96,7 +98,8 @@ int main()
     cout << "\n\n//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD Elvin         //\n//////////////////////////////////////////////////////\n" ;
     cout << "\nElvin\n\n";
     Matrix elvin;
-    elvin.readFile("dataelv.csv");
+    elvin.readFile("/dataelv.csv");
+    cout << '\n' << elvin;
     PCA elv(elvin);
     elv.outputData();
     elv.calcStats();

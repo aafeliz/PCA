@@ -6,12 +6,12 @@ project(PCA)
 include_directories(include)
 
 # now to create var for all my source(.cpp) files
-set(MYSRC src/Matrix.cpp)# src/PCA.cpp)
+set(MYSRC src/Matrix.cpp src/PCA.cpp)# src/PCA.cpp)
 # FOR FUTURE USE THE FOLLOWING
 #file(GLOB MYSRC "src/*.cpp")
 
 set(MATRIX_SRC src/Matrix.cpp)
-set(SOURCE_FILES main.cpp ${MATRIX_SRC})
+set(SOURCE_FILES main.cpp ${MYSRC})
 
 
 add_executable(PCA ${SOURCE_FILES})

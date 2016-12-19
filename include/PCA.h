@@ -134,6 +134,11 @@ public:
     void outputX_bar();// not mean!
     
     Matrix getScatter();
+    Matrix getEigVectors();
+    Matrix getEigValues();
+    Matrix getAi();
+    Matrix getX_bar();
+    Matrix getOrig();
     ///////////////////////////// Things for the future///////////////////
     /**@todo:
      */

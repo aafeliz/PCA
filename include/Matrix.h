@@ -21,6 +21,7 @@
 #include <vector>// vector
 #include <sstream>
 #include <string>
+#include <iomanip>
 
 
 
@@ -145,6 +146,7 @@ public:
 
     inline void setRows(size_t);
     inline void setCols(size_t);
+ 
 
 };
 namespace Mat {
