@@ -138,6 +138,9 @@ void PCA::outputALL()
     outputStats();
     outputEigen();
     outputPCA();
+    x_bar.writeFile("output.csv");
+    eigenVals.writeFile("eigenvals.csv");
+    eigenVect.writeFile("eigenvects.csv");
 }
 void PCA::outputEigen()
 {
@@ -182,7 +185,7 @@ void PCA::houseHolder(Matrix& A, Matrix& d, Matrix& e, const size_t& row)
     //  Fortran subroutine in EISPACK.
     
     const size_t n = A.cols;
-    for(int i = 0; i < n; i++)
+    for(size_t i = 0; i < n; i++)
         d(row, i) = A(n-1, i);
     
     // householder reduction to tridiagnal form

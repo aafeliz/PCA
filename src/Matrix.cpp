@@ -449,7 +449,7 @@ Matrix* Matrix::jacobian_eig()
         const size_t maxNrot = 5 * n * n;
         // init the transformation matrix
         Matrix p(n, n);
-        for(int i = 0, j = 0; i < n; i++, j++)
+        for(size_t i = 0, j = 0; i < n; i++, j++)
             p(i,j) = 1;
         // jacobi rotation loop
         double *aMax;
@@ -491,7 +491,7 @@ Matrix* Mat::jacobian_eig(const Matrix& A)
         const size_t maxNrot = 5 * n * n;
         // init the transformation matrix
         Matrix p(n, n);
-        for(int i = 0, j = 0; i < n; i++, j++)
+        for(size_t i = 0, j = 0; i < n; i++, j++)
             p(i,j) = 1;
         // jacobi rotation loop
         double *aMax;
@@ -526,7 +526,7 @@ size_t Mat::getMaxIdx(const Matrix &A)
 {
     size_t maxIdx = 0;//A(0,0);
     double maxVal = A(0,0);
-    for(int i = 0; i < A.cols; i++)
+    for(size_t i = 0; i < A.cols; i++)
     {
         if(A(0, i) > maxVal)
         {
@@ -548,7 +548,8 @@ void Matrix::readFile(std::string filename)
     //assert(inFile.is_open() != false && "file did not open assert\n") ;
 	inFile.open(filename);
     try {
-        if(inFile.is_open()) throw std::string("file did not open\n");
+        if(!inFile.is_open())
+        	throw std::string("file did not open\n");
         
     }
     catch(std::string msg)
