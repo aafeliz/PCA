@@ -86,6 +86,7 @@ void PCA::calcALL()
     calcEigen();
     calcPCA();
 }
+Matrix eee;
 void PCA::calcPCA()
 {
     
@@ -107,6 +108,7 @@ void PCA::calcPCA()
         //std::cout << "x_bar :\n" << x_bar << '\n';
     }
     
+    //eee = eigenVect * featuresData;
     
     
     
@@ -138,7 +140,7 @@ void PCA::outputALL()
     outputStats();
     outputEigen();
     outputPCA();
-    x_bar.writeFile("output.csv");
+    //eee.writeFile("output.csv");
     eigenVals.writeFile("eigenvals.csv");
     eigenVect.writeFile("eigenvects.csv");
 }
@@ -149,10 +151,12 @@ void PCA::outputEigen()
     outputEigVect();
 }
 
-void PCA::outputEigVect()
+Matrix PCA::outputEigVect()
 {
+	Matrix elvintest = eigenVect;
+
     std::cout << "Eigen Vectors:\n" << eigenVect;
-    
+    return elvintest;
 }
 
 void PCA::outputEigVals()
