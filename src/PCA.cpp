@@ -76,7 +76,7 @@ void PCA::eigenHH(Matrix& V, Matrix& D)
 
 void PCA::eigenJacobian()
 {
-    Matrix *eigens = Mat::jacobian_eig(sMat);
+    Matrix *eigens = Mat::jacobian_eig(covMat);
     eigenVals = eigens[0];
     eigenVect = eigens[1];
 }
@@ -91,23 +91,35 @@ void PCA::calcPCA()
     
     //std::cout << "Xi_mu\n" << xi_mu << '\n';
     const size_t MAX = Mat::getMaxIdx(eigenVals);
-    const Matrix maxVec = eigenVect.getColumn(MAX);
+    const Matrix maxVec = eigenVect;//.getColumn(MAX);
     //std::cout << "maxVec\n" << maxVec << '\n';
     ai = ~maxVec * xi_mu;
     const Matrix teVect = eigenVect.getColumn(MAX);
     //std::cout << "ai\n" << ai << '\n';
     double aii;
     Matrix x_bari;
+
+
+
+    /**/
+    Mat::sortRowAB_BasedOnA(0, eigenVals, eigenVect);
     for(size_t c = 0; c < ai.cols; c++)
     {
         aii = ai(0,c);
         //std::cout << "aiii :\n" << aii << '\n';
-        x_bari = mu + (aii * maxVec);
+        x_bari = mu + (aii * eigenVect.getColumn(c));//mu + (aii *
         x_bar.appendCol(x_bari);
         //std::cout << "x_bar :\n" << x_bar << '\n';
     }
     
-    
+    /**/
+
+
+
+    //const Matrix e = eigenVect;
+    //std::cout << e << "\n";
+    //x_bar = ~e * featuresData;
+    //std::cout << x_bar << '\n';
     
     
     /*
@@ -507,8 +519,9 @@ void PCA::calcMeans()///O(numFeatures*numInputsPerFeature)
 }
 
 
-/**@field:
+/**@field: calculates the scattering matrix then converts to covarience by div by N-1
   *@bug: friend operator wont take matrix as const matrix& unless it is const
+  *
  */
 
 void PCA::calcScatterMatrix()
@@ -516,8 +529,6 @@ void PCA::calcScatterMatrix()
     
     Matrix scatterMat(mu.rows, mu.rows, 0.0);
     xi_mu = Matrix(0, 0, 0.0);
-    //Matrix xi;
-    //Matrix xi_mu;
     for(size_t c = 0; c < featuresData.cols; c++)
     {
         // calc all xi - mu
@@ -532,6 +543,7 @@ void PCA::calcScatterMatrix()
         Matrix xi_mu2 = txi_mu * ~(txi_mu);
         scatterMat += xi_mu2;
     }
+
     /*
     Matrix scatterMat(mu.rows, mu.rows, 0.0);
     //Matrix xi;
@@ -553,6 +565,8 @@ void PCA::calcScatterMatrix()
     }
     */
     this->sMat = scatterMat;
+    scatterMat = (1.0 / (featuresData.rows - 1)) * scatterMat;
+    this->covMat = scatterMat;
 }
 void PCA::calcStats()
 {
@@ -574,11 +588,16 @@ void PCA::outputScatterMatrix()
 {
     std::cout <<"Scatter Matrix is:\n" << sMat << std::endl;
 }
+void PCA::outputCovMatrix()
+{
+    std::cout <<"Cov Matrix is:\n" << covMat << std::endl;
+}
 
 void PCA::outputStats()
 {
     outputMu();
     outputScatterMatrix();
+    outputCovMatrix();
 }
 Matrix PCA::getScatter()
 {

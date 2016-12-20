@@ -41,6 +41,7 @@ private:
     Matrix A;
     Matrix mu; // more like a vector so it [numFeatures(rows) x 1(cols)]
     Matrix sMat; // scatter matrix
+    Matrix covMat; // covariance matrix
     Matrix xi_mu;// all xi-mu
     Matrix ai; // eigenVec' * (xi-mu)
     Matrix x_bar; // not mean, these are the new x on the new projection
@@ -118,6 +119,8 @@ public:
     void outputMu();
     
     void outputScatterMatrix();
+
+    void outputCovMatrix();
     
     void outputStats();
     

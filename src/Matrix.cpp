@@ -389,9 +389,20 @@ double* Mat::thMaxElement(const Matrix& A)
 
 void Mat::mRotate(Matrix& A, Matrix& p, const u_int32_t& R, const u_int32_t& C)
 {
+    /** goal is to rotate to make A(R, C) = 0 then update the transformation matrix P
+        The rotation distributes the coeficient to make it possible to have the off-diagnal
+        values queal 0, while making diagnal gets bigger.
+        The algorithm relies on having R and C being the location in A where the Max value is located outside the diagnol
+        It is also the focus in which the more iterations the function is used the more accurate the
+        transformation matrix becomes.
+
+    */
     const size_t n = A.cols;
     double aDiff, t, phi, c, s, tau, temp;
+    // getting the differences
     aDiff = A(C, C) - A(R, R);
+
+    // A(R, C) is where the max was found off the diagonal
     if(std::abs(A(R, C)) < std::abs(aDiff))
         t = A(R, C)/aDiff;
     else
@@ -401,6 +412,7 @@ void Mat::mRotate(Matrix& A, Matrix& p, const u_int32_t& R, const u_int32_t& C)
         if(phi < 0.0)
             t = -t;
     }
+
     c = 1.0 / sqrt((t * t) + 1.0);
     s = t * c;
     tau = s / (1.0 + c);
@@ -408,22 +420,45 @@ void Mat::mRotate(Matrix& A, Matrix& p, const u_int32_t& R, const u_int32_t& C)
     A(R, C) = 0.0;
     A(R, R) = A(R, R) - (t * temp);
     A(C, C) = A(C, C) + (t * temp);
-    
-    /// Case of i < R
+
+    /*
+     *  Cases distribute the new values using the coeficients calculated above
+     */
+    /** changing all as shown
+     *        C/R   R/C
+     *        |     |
+     *        |     |
+     *        |     |
+     *        |     |
+     *        |     |
+     *
+     Case of i < R */
     for(size_t i = 0; i < R; i++)
     {
         temp = A(i, R);
         A(i, R) = temp - (s * (A(i, C) + (tau * temp)));
         A(i, C) = A(i, C) + (s * (temp - (tau * A(i, C))));
     }
-    /// Case of k < i < l
+
+    /**changing the values two lines; rotation
+    *                R-----
+    *                      |
+    *                      |
+    *                      |
+     Case of R < i < C  */
     for(size_t i = R + 1; i < C; i++)
     {
         temp = A(R, i);
         A(R, i) = temp - (s * (A(i, C) + (tau * A(i, C))));
         A(i, C) = A(i, C) + (s * (temp - (tau * A(i, C))));
     }
-    /// Case of i > l
+    /** changing two rows as shown
+     *
+     *    R/C--------------
+     *
+     *    C/R--------------
+     *
+     Case of i > C */
     for(size_t i = C + 1; i < n; i++)
     {
         temp = A(R, i);
@@ -521,6 +556,45 @@ Matrix* Mat::jacobian_eig(const Matrix& A)
         std::cout << error << '\n';
         return nullptr;
     }
+}
+
+
+void Matrix::sortRow(size_t r)
+{
+    Matrix t = *this;
+    int i, j, key;
+    for(j = 1; j < cols; j++)    // Start with 1 (not 0)
+    {
+        key = t(r,j);
+        for(i = j - 1; (i >= 0) && (t(r,i) < key); i--)   // Smaller values move up
+        {
+            t(r,i+1) = t(r,i);
+        }
+        t(r,i+1) = key;    //Put key into its proper location
+    }
+    *this = t;
+    return;
+}
+void Mat::sortRowAB_BasedOnA(const size_t& r, Matrix& A, Matrix& B)
+{
+    int i, j, key;
+    double arr[B.rows];
+    for(j = 1; j < A.cols; j++)    // Start with 1 (not 0)
+    {
+        key = A(r,j);
+        for(size_t k = 0; k < B.rows; k++)
+            arr[k] = B(k, j);
+        for(i = j - 1; (i >= 0) && (A(r,i) < key); i--)   // Smaller values move up
+        {
+            A(r,i+1) = A(r,i);
+            for(size_t k = 0; k < B.rows; k++)
+                B(k,i+1) = B(k, i);
+        }
+        A(r,i+1) = key;    //Put key into its proper location
+        for(size_t k = 0; k < B.rows; k++)
+            B(k,i+1) = arr[k];
+    }
+    return;
 }
 size_t Mat::getMaxIdx(const Matrix &A)
 {
