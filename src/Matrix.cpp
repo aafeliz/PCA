@@ -25,6 +25,8 @@ Matrix::Matrix(size_t rows, size_t cols, double val = 0) : rows(rows), cols(cols
     for (size_t i = 0; i < rows*cols; i++)
         m[i] = val;
 }//*/
+
+/* gets the an (i,j) index from the matrix	*/
 size_t Matrix::getIdx(size_t r, size_t c)
 {
     return ((cols*r) + c);// rows
@@ -37,6 +39,7 @@ size_t Mat::getIdx(const size_t& Rows, const size_t& Cols, const size_t& r, cons
 {
     return (Cols * r) + c;
 }
+
 /**@bug: delete cannot be used when arr-> is pointing at an array that did not use new*/
 Matrix::Matrix(size_t r, size_t c, double *arr)
 {
@@ -64,9 +67,8 @@ Matrix::~Matrix()
 {
     delete[] m;
 }
-/*
- *
- */
+
+/* make a copy of given matrix	*/
 Matrix::Matrix(const Matrix& orig) : rows(orig.rows), cols(orig.cols)
 {
     /**@todo: should it delete m first, possible memory leak
@@ -75,13 +77,19 @@ Matrix::Matrix(const Matrix& orig) : rows(orig.rows), cols(orig.cols)
     for (size_t i = 0; i < rows*cols; ++i)
         m[i] = orig.m[i];
 }
+
+
 /*Matrix::Matrix(Matrix&& orig) : rows(orig.rows), cols(orig.cols), m(orig.m)
 {
     // might want to keep original
     //orig.m = nullptr;
 }*/
+
+/*	assign a matrix to be equal to another	*/
 Matrix& Matrix::operator =(const Matrix& orig)
 {
+	//	if current matrix is not equal to the one being passed in,
+	//	copy all the contents of the given matrix into the current one
     if (this != &orig) {
         delete[] this->m;
         this->m = new double[orig.cols * orig.rows];
@@ -95,6 +103,7 @@ Matrix& Matrix::operator =(const Matrix& orig)
     return *this;
 }
 
+/*	operator function to easily access a certain index of the matrix	*/
 double& Matrix::operator ()(size_t r, size_t c)
 {
     return m[getIdx(r, c)];
@@ -103,6 +112,7 @@ double& Matrix::operator()(size_t r, size_t c) const
 {
     return m[getIdx(r, c)];
 }
+
 /*
 double& Matrix::operator[](size_t r, size_t c)
 {
@@ -134,12 +144,18 @@ double Matrix:: operator T(size_t r, size_t c) const
     return m[r*cols + c];
 }
 */
+
+/*	transpose a given matrix	*/
 Matrix& operator ~(const Matrix& a)
 {
     const size_t size = a.rows * a.cols;
     double *arr = new double[size];
     
     size_t r = 0, c = 0, tidx = 0;
+    
+    /* go thru whole array and find the
+    correct index in our "matrix" (actually
+    an array) to place the value */
     for(size_t i = 0; i < size; i++)
     {
         r = i / a.cols;
@@ -148,6 +164,7 @@ Matrix& operator ~(const Matrix& a)
         arr[tidx] = a.m[i];
     }
     
+    //set our matrix to the built array
     return *new Matrix(a.cols, a.rows, arr);
 }
 /*
@@ -184,6 +201,8 @@ void operator ~(Matrix& a)
         tidx = (c*a.rows) + r;
         a.m[tidx] = arr[i];
     }
+
+    //swap rows with columns
     size_t temp = a.cols;
     a.cols = a.rows;
     a.rows = temp;
@@ -198,6 +217,7 @@ void operator ~(Matrix& a)
     return 0.0;
 }*/
 
+/*	add two matrices together	*/
 Matrix operator +(const Matrix& a, const Matrix& b)
 {
     if(a.rows != b.rows || a.cols != b.cols) exit(1);
@@ -213,6 +233,7 @@ Matrix operator +(const Matrix& a, const Matrix& b)
     return Matrix(a.rows, b.cols, arr);
 }
 
+/*	subtract one matrix from another	*/
 Matrix operator -(const Matrix& a, const Matrix& b)
 {
     size_t sizea = a.rows*a.cols;
@@ -225,26 +246,31 @@ Matrix operator -(const Matrix& a, const Matrix& b)
     {
         if (b.rows == a.rows || b.cols == a.cols)
         {
+        	//if b has one row but not just one element
             if (b.rows == 1 && sizeb != 1)
             {
                 double *arr = new double[a.rows * a.cols];
                 for(size_t r = 0; r < a.rows; r++)
                 {
+                	//subtract each of the elements in the 0th row
                     for(size_t c = 0; c < a.cols; c++)
                         arr[a.getIdx(r, c)] = a(r, c) - b(0, c);//((r*a.rows) + c)
                 }
                 return Matrix(a.rows, a.cols, arr);
             }
+            //if b has one column but not just one element
             else if (b.cols == 1 && sizeb != 1)
             {
                 double *arr = new double[a.rows * a.cols];
                 for(size_t r = 0; r < a.rows; r++)
                 {
+                	//subtract each of elements in the 0th column
                     for(size_t c = 0; c < a.cols; c++)
                         arr[a.getIdx(r, c)] = a(r, c) - b(r, 0);//((r*a.rows) + c)
                 }
                 return Matrix(a.rows, a.cols, arr);
             }
+            //if b is just one element
             else if (sizeb == 1)
             {
                 if (a.cols == 1)
@@ -271,7 +297,9 @@ Matrix operator -(const Matrix& a, const Matrix& b)
         }
         else { /**@todo:subtracting smaller matrix and b not a vector*/ }
     }
-    if(a.rows != b.rows || a.cols != b.cols) exit(1);
+
+    if(a.rows != b.rows || a.cols != b.cols)
+    	exit(1);
     double *arr = new double[a.rows * a.cols];
     for(size_t r = 0; r < a.rows; r++)
     {
@@ -282,14 +310,21 @@ Matrix operator -(const Matrix& a, const Matrix& b)
     return Matrix(a.rows, b.cols, arr);
 }
 
+/*	multiply two matrices together	*/
 Matrix operator *(const Matrix& a, const Matrix& b)
 {
-    if(a.cols != b.rows) exit(1);
+    //if this isn't true, matrix multiplication not valid
+    if(a.cols != b.rows)
+    	exit(1);
+    //create array of doubles and initialize to 0
     double *arr = new double[a.rows * b.cols];
     for(size_t i = 0; i< (a.rows * b.cols); i++)
     {
         arr[i] = 0;
     }
+    /*each i,j element is found by multiplying the entries
+      across row i of A by the entries down column j of B and
+      summing them from k=1 to m (m is a.cols or b.rows) */
     for(size_t ra = 0; ra < a.rows; ra++)
     {
         for(size_t cb = 0; cb < b.cols; cb++)
@@ -304,6 +339,8 @@ Matrix operator *(const Matrix& a, const Matrix& b)
 /**@brief: scalar to matrix multiplication
  
  */
+
+/*	multiply a matrix by a scalar	*/
 Matrix operator *(const double& a, const Matrix& b)
 {
     double *arr = new double[b.rows * b.cols];
@@ -315,6 +352,7 @@ Matrix operator *(const double& a, const Matrix& b)
     {
         for(size_t c = 0; c < b.cols; c++)
         {
+        	//multiply each element by scalar
             arr[b.getIdx(r, c)] = a * b(r, c);
         }
     }
@@ -323,7 +361,7 @@ Matrix operator *(const double& a, const Matrix& b)
 }
 
 
-// add another matrix to this one, changing this
+/*	add another matrix to this one, changing this	*/
 Matrix Matrix::operator +=(const Matrix& b)
 {
     for(size_t i = 0; i < (this->cols * this->rows); i++)
@@ -333,7 +371,7 @@ Matrix Matrix::operator +=(const Matrix& b)
     return *this;
 }
 
-// add another matrix to this one, changing this
+/*	add constant to every element in this matrix, changing this	*/
 Matrix Matrix::operator +=(const double& b)
 {
     for(size_t i = 0; i < (this->cols * this->rows); i++)
@@ -343,7 +381,7 @@ Matrix Matrix::operator +=(const double& b)
     return *this;
 }
 
-// subtract another matrix from this one, changing this
+/*	subtract another matrix from this one, changing this	*/
 Matrix Matrix::operator -=(const Matrix& b)
 {
     for(size_t i = 0; i < (this->cols * this->rows); i++)
@@ -366,7 +404,7 @@ Matrix Matrix::operator -=(const Matrix& b)
  */
 /**@brief: Jacobian eigen decomposition helper function find max value
         * Will retrieve value and location of largest value of top half of matrix
-        * Returns drouble array with [maxVal, Row, Col]
+        * Returns double array with [maxVal, Row, Col]
  */
 double* Mat::thMaxElement(const Matrix& A)
 {
@@ -562,7 +600,7 @@ Matrix* Mat::jacobian_eig(const Matrix& A)
 void Matrix::sortRow(size_t r)
 {
     Matrix t = *this;
-    int i, j, key;
+    size_t i, j, key;
     for(j = 1; j < cols; j++)    // Start with 1 (not 0)
     {
         key = t(r,j);
@@ -577,7 +615,7 @@ void Matrix::sortRow(size_t r)
 }
 void Mat::sortRowAB_BasedOnA(const size_t& r, Matrix& A, Matrix& B)
 {
-    int i, j, key;
+    size_t i, j, key;
     double arr[B.rows];
     for(j = 1; j < A.cols; j++)    // Start with 1 (not 0)
     {
@@ -619,22 +657,23 @@ void Matrix::readFile(std::string filename)
     std::vector<double> input;
 	std::fstream inFile;
 	std::string line;
-    //assert(inFile.is_open() != false && "file did not open assert\n") ;
 	inFile.open(filename);
-    try {
+    try
+    {
         if(!inFile.is_open())
-        	throw std::string("file did not open\n");
-        
+        	throw std::string("File did not open successfully.\n");
     }
     catch(std::string msg)
     {
         std::cout << msg;
     }
+
+    //going to use r and c to determine the # of rows and cols
     size_t r = 0;
     size_t c = 0;
 
-	//get each line of the file, then push each value from every line onto
-	//the back of a vector
+	//get each line of the file, then push each value from
+	//every line onto the back of a vector
 	while (!inFile.eof() && getline(inFile, line, '\n'))
 	{
 		std::stringstream ss(line);
@@ -642,12 +681,18 @@ void Matrix::readFile(std::string filename)
 		while(ss)
 		{
 			std::string s;
+			//delimit on ',' (since it's a csv)
 			if (!getline(ss, s, ','))
 				break;
+			//convert current string number val to double
+			//and push it back onto the vector
 			double d = std::stod(s);
 			input.push_back(d);
+
+			//increment number of columns the read matrix has
 			c++;
 		}
+		//after every line is complete, increment # of rows
 		r++;
 	}
 	inFile.close();
@@ -666,6 +711,11 @@ void Matrix::writeFile(std::string filename)
 	std::ofstream outFile;
 	outFile.open(filename);
     double val;
+
+    /*	for each val in our matrix, output the number
+    	followed by a comma, except the last column
+    	whose values should be follow with a \n instead
+    	of a comma	*/
     for(size_t i = 0; i < this->rows; i++)
     {
         for(size_t j = 0; j < this->cols-1; j++)
@@ -699,6 +749,7 @@ Matrix Matrix::getRow(size_t row)
     return Matrix(1, cols, arr);
 }
 
+/*	add a row to the given matrix	*/
 void Matrix::appendRow(const Matrix& B)
 {
     const size_t oldSize = rows * B.cols;
@@ -719,6 +770,7 @@ void Matrix::appendRow(const Matrix& B)
     
     
 }
+/*	add a column to the given matrix	*/
 void Matrix::appendCol(const Matrix& B)
 {
     const size_t oldCols = cols;
@@ -731,14 +783,9 @@ void Matrix::appendCol(const Matrix& B)
         for(size_t c = 0; c < cols; c++)
         {
             if(c < oldCols)
-            {
                 temp[getIdx(r, c)] = m[Mat::getIdx(rows, oldCols, r, c)];
-            }
             else
-            {
                 temp[getIdx(r, c)] = B(r,0);
-            }
-            
         }
     }
     delete[] m;
@@ -758,7 +805,6 @@ std::ostream& operator<<(std::ostream& s, const Matrix& m)
 {
     double val;
     s.precision(4);
-    //s << std::setprecision(4);
     for(size_t i = 0; i < m.rows; i++)
     {
         for(size_t j = 0; j < m.cols; j++)

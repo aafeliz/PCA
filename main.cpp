@@ -81,7 +81,9 @@ int main()
     for(size_t i = 0; i < 25; i++)
         arr2[i] = input2[i];
 
-    Matrix mData11(5,5,arr2);
+	//uncomment this to run your stuff, the absolute path will only work for you
+
+    /*Matrix mData11(5,5,arr2);
     mData11.writeFile("/Users/arielfeliz/Documents/MATLAB/PCAtest.csv");
     PCA pc3(mData11);
     pc3.calcALL();
@@ -91,10 +93,11 @@ int main()
     results = pc3.getEigVectors();
     results.writeFile("/Users/arielfeliz/Documents/MATLAB/PCAeigVecs.csv");
     results = pc3.getEigValues();
-    results.writeFile("/Users/arielfeliz/Documents/MATLAB/PCAeigVal.csv");
+    results.writeFile("/Users/arielfeliz/Documents/MATLAB/PCAeigVal.csv");*/
     //Matrix mData2(5, 5, arr2);
+
     Matrix mData2;
-    mData2.readFile("/Users/arielfeliz/Documents/GithubClones/PCA/iris.csv");
+    mData2.readFile("iris.csv");
     ~mData2;
     PCA p2(mData2);
     p2.calcALL();
@@ -102,14 +105,12 @@ int main()
     Matrix x_bar = p2.getX_bar();
     x_bar.writeFile("/Users/arielfeliz/Documents/MATLAB/irisResults.csv");
 
-
-    //p2.outputData();
-    //p2.calcStats();
-    //p2.outputStats();
-    //p2.calcEigen();
-    //p2.outputEigen();
-    //p2.calcPCA();
-    //p2.outputPCA();
+    Matrix mData3;
+    mData3.readFile("dataelv.csv");
+    PCA p3(mData3);
+    p3.calcALL();
+    p3.outputALL();
+    cout << "\n\n";
 
     cout << "this is a matrix mult test" << endl;
     Matrix m1(8, 3, 4);
@@ -119,23 +120,7 @@ int main()
     Matrix m3 = m1 * mat1;
     cout << m3;
     
-//    cout << "\n\n//////////////////////////////////////////////////////\n//              USING JACOBIAN METHOD Elvin         //\n//////////////////////////////////////////////////////\n" ;
-//    cout << "\nElvin\n\n";
-
-//    Matrix elvin;
-//    elvin.readFile("dataelv.csv");
-//    cout << '\n' << elvin;
-//    PCA elv(elvin);
-//    elv.outputData();
-//    elv.calcStats();
-//    elv.outputStats();
-//    elv.calcEigen();
-//    elv.outputEigen();
-//    elv.calcPCA();
-//    elv.outputPCA();
-//
-//    cout << '\n' << elvin;
-    
+    cout << "done\n";
     
     
     return 0;
