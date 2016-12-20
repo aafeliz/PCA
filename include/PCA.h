@@ -126,7 +126,7 @@ public:
     
     void outputEigen();
     
-    Matrix outputEigVect();
+    void outputEigVect();
     
     void outputEigVals();
     

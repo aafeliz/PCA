@@ -94,6 +94,7 @@ void PCA::calcPCA()
     const Matrix maxVec = eigenVect;//.getColumn(MAX);
     //std::cout << "maxVec\n" << maxVec << '\n';
     ai = ~maxVec * xi_mu;
+    ai = ai.getRow(0);
     const Matrix teVect = eigenVect.getColumn(MAX);
     //std::cout << "ai\n" << ai << '\n';
     double aii;
